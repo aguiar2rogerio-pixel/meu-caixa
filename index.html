@@ -434,6 +434,29 @@
             }
         }
 
+        function salvarRascunhoCampos() {
+            if (lancamentoEmEdicao !== null) return;
+            const rascunho = {
+                faturamento: document.getElementById('faturamento').value,
+                rendaExtra: document.getElementById('renda-extra').value,
+                gasolina: document.getElementById('gasolina').value,
+                reservaFinanceira: document.getElementById('reserva-financeira').value,
+                investimento: document.getElementById('investimento').value
+            };
+            localStorage.setItem('rascunho_campos_dia', JSON.stringify(rascunho));
+        }
+
+        function carregarRascunhoCampos() {
+            const rascunho = JSON.parse(localStorage.getItem('rascunho_campos_dia'));
+            if (rascunho) {
+                document.getElementById('faturamento').value = rascunho.faturamento || '';
+                document.getElementById('renda-extra').value = rascunho.rendaExtra || '';
+                document.getElementById('gasolina').value = rascunho.gasolina || '';
+                document.getElementById('reserva-financeira').value = rascunho.reservaFinanceira || '';
+                document.getElementById('investimento').value = rascunho.investimento || '';
+            }
+        }
+
         function atualizarUI() {
             let totalFat = 0, totalRenda = 0, totalGas = 0, totalPes = 0, totalRes = 0, totalInv = 0;
             
@@ -596,20 +619,10 @@
             const modal = document.getElementById('subjanela-gastos');
             modal.classList.remove('active');
             modal.style.display = 'none';
-
-            if (lancamentoEmEdicao === null) {
-                itensGastosTemporarios = JSON.parse(localStorage.getItem('rascunho_gastos_dia')) || [];
-            }
         }
 
         function salvarRascunhoGastos() {
-            if (lancamentoEmEdicao !== null) {
-                dados.historico[lancamentoEmEdicao].detalheGastos = [...itensGastosTemporarios];
-                let sum = 0;
-                itensGastosTemporarios.forEach(i => sum += i.valor);
-                dados.historico[lancamentoEmEdicao].pessoal = sum;
-                document.getElementById('edit-pessoal').value = sum;
-            } else {
+            if (lancamentoEmEdicao === null) {
                 localStorage.setItem('rascunho_gastos_dia', JSON.stringify(itensGastosTemporarios));
             }
         }
@@ -679,13 +692,15 @@
             let totalCalculado = 0;
             itensGastosTemporarios.forEach(i => totalCalculado += i.valor);
             if (lancamentoEmEdicao !== null) {
-                document.getElementById('edit-pessoal').value = totalCalculado;
-                dados.historico[lancamentoEmEdicao].pessoal = totalCalculado;
                 dados.historico[lancamentoEmEdicao].detalheGastos = [...itensGastosTemporarios];
+                dados.historico[lancamentoEmEdicao].pessoal = totalCalculado;
+                document.getElementById('edit-pessoal').value = totalCalculado;
             } else {
                 document.getElementById('pessoal').value = totalCalculado > 0 ? formatarMoeda(totalCalculado) : 'R$ 0,00 calculado';
+                localStorage.setItem('rascunho_gastos_dia', JSON.stringify(itensGastosTemporarios));
             }
             fecharSubjanelaGastos();
+            atualizarUI();
         }
 
         /* TRANSFERÊNCIAS E RESGATES */
@@ -766,6 +781,7 @@
 
             itensGastosTemporarios = [];
             localStorage.removeItem('rascunho_gastos_dia');
+            localStorage.removeItem('rascunho_campos_dia');
 
             atualizarUI();
 
@@ -924,7 +940,13 @@
                     .catch((err) => console.error('Erro ao registrar Service Worker:', err));
             });
         }
+        carregarRascunhoCampos();
         atualizarUI();
+
+        // Listeners para auto-salvamento dos campos
+        ['faturamento', 'renda-extra', 'gasolina', 'reserva-financeira', 'investimento'].forEach(id => {
+            document.getElementById(id).addEventListener('input', salvarRascunhoCampos);
+        });
     </script>
 </body>
 </html>

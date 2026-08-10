@@ -295,7 +295,7 @@
         <div class="modal-content space-y-3">
             <div class="flex justify-between items-center border-b border-gray-700 pb-2">
                 <h3 class="text-sm font-bold text-blue-400 uppercase tracking-wider">Ajustar Lançamento</h3>
-                <button type="button" onclick="deletarLancamento()" class="text-red-500 text-sm p-1" title="Excluir Lançamento">🗑️</button>
+                <button type="button" onclick="deletarLancamento()" class="text-red-500 text-sm p-1" title="Excluir Lançamento do Dia">🗑️</button>
             </div>
 
             <div class="space-y-2 text-xs">
@@ -660,7 +660,10 @@
                 btnDel.type = 'button';
                 btnDel.className = 'text-red-500 font-bold px-1';
                 btnDel.textContent = '✕';
-                btnDel.onclick = () => removerItemDaLista(index);
+                btnDel.onclick = (e) => {
+                    e.preventDefault();
+                    removerItemDaLista(index);
+                };
                 tdAcao.appendChild(btnDel);
 
                 tr.appendChild(tdDesc);
@@ -824,7 +827,7 @@
 
         function deletarLancamento() {
             if (lancamentoEmEdicao === null) return;
-            if (confirm('Deseja excluir este registro definitivamente?')) {
+            if (confirm('Deseja excluir este registro de dia inteiro definitivamente?')) {
                 dados.historico.splice(lancamentoEmEdicao, 1);
                 localStorage.setItem('meu_caixa_data', JSON.stringify(dados));
                 fecharModal(); 

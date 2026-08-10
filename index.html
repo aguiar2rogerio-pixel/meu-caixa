@@ -74,7 +74,7 @@
 </head>
 <body class="p-4 max-w-md mx-auto pb-24">
 
-    <!-- CABEÇALHO PATRIMONIAL (3 CAIXAS) -->
+    <!-- CABEÇALHO PATRIMONIAL -->
     <header class="text-center my-4 space-y-3">
         <div>
             <h1 class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-0.5">Total Acumulado</h1>
@@ -82,7 +82,6 @@
         </div>
 
         <div class="grid grid-cols-2 gap-2 text-left">
-            <!-- FUNDO DE EMERGÊNCIA -->
             <div class="bg-gray-900 border border-orange-500/30 p-2.5 rounded-2xl flex flex-col justify-between">
                 <div>
                     <span class="text-[9px] font-black uppercase text-orange-400 block tracking-wider">Fundo Emergência</span>
@@ -93,7 +92,6 @@
                 </button>
             </div>
 
-            <!-- POUPANÇA / INVESTIMENTOS -->
             <div class="bg-gray-900 border border-purple-500/30 p-2.5 rounded-2xl flex flex-col justify-between">
                 <div>
                     <span class="text-[9px] font-black uppercase text-purple-400 block tracking-wider">Poupança</span>
@@ -105,14 +103,13 @@
             </div>
         </div>
 
-        <!-- DISPONÍVEL -->
         <div class="bg-gray-900 border border-blue-500/30 p-2.5 rounded-2xl text-center">
             <span class="text-[10px] font-black uppercase text-blue-400 block tracking-wider">Disponível</span>
             <span id="saldo-disponivel" class="text-xl font-black text-blue-400">R$ 0,00</span>
         </div>
     </header>
 
-    <!-- CARD DO ÚLTIMO REGISTRO -->
+    <!-- ÚLTIMO REGISTRO -->
     <div id="ultimo-resumo-container" class="hidden mb-4">
         <div class="bg-gray-900 border-2 border-gray-800 rounded-2xl p-3">
             <div class="flex justify-between items-center mb-2">
@@ -138,8 +135,6 @@
 
     <!-- FORMULÁRIO PRINCIPAL -->
     <div class="space-y-4 bg-gray-900 p-4 rounded-2xl border-2 border-gray-800 shadow-xl">
-        
-        <!-- ENTRADAS -->
         <div class="grid grid-cols-2 gap-3">
             <div>
                 <label class="block text-xs font-black text-white mb-1 ml-1 uppercase tracking-wide">Faturamento</label>
@@ -151,13 +146,11 @@
             </div>
         </div>
 
-        <!-- SAÍDA OPERACIONAL -->
         <div>
             <label class="block text-xs font-black text-white mb-1 ml-1 uppercase tracking-wide">Combustível</label>
             <input type="number" id="gasolina" inputmode="decimal" placeholder="0,00" class="input-autonomo">
         </div>
 
-        <!-- GASTOS PESSOAIS -->
         <div class="bg-gray-950 p-3 rounded-xl border border-gray-800 space-y-2">
             <div class="flex justify-between items-center">
                 <label class="block text-xs font-black text-red-400 uppercase tracking-wide ml-1">Gastos Pessoais (-)</label>
@@ -168,7 +161,6 @@
             <input type="text" id="pessoal" readonly placeholder="R$ 0,00 calculado" class="input-bloqueado font-bold">
         </div>
 
-        <!-- RESERVAS E INVESTIMENTOS -->
         <div class="grid grid-cols-2 gap-3">
             <div>
                 <label class="block text-xs font-black text-orange-400 mb-1 ml-1 uppercase tracking-wide">Fundo Emergência</label>
@@ -180,13 +172,12 @@
             </div>
         </div>
 
-        <!-- BOTÃO DE LANÇAMENTO INTELIGENTE -->
         <button id="btn-salvar-principal" onclick="salvarLancamento(event)" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl text-lg shadow-md uppercase tracking-wider mt-2">
             Salvar Lançamento do Dia
         </button>
     </div>
 
-    <!-- RESUMO DO PERÍODO CORRENTE -->
+    <!-- RESUMO DO PERÍODO -->
     <div class="mt-6 bg-gray-900 p-4 rounded-2xl border-2 border-gray-800">
         <h2 class="text-xs font-black text-yellow-500 mb-3 uppercase tracking-wider">Balanço do Período Atual</h2>
         <div class="grid grid-cols-2 gap-2 text-xs mb-4">
@@ -202,7 +193,7 @@
         </button>
     </div>
 
-    <!-- HISTÓRICO DIÁRIO COM SCROLL FIXO -->
+    <!-- HISTÓRICO -->
     <div class="mt-6">
         <div class="flex justify-between items-center mb-2 px-1">
             <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Histórico Recente</h2>
@@ -231,7 +222,7 @@
         <div id="meses-vazios" class="text-center text-gray-600 text-xs italic p-3">Nenhum mês arquivado ainda</div>
     </div>
 
-    <!-- SUBJANELA MODAL: PLANILHA DE GASTOS -->
+    <!-- MODAL PLANILHA DE GASTOS -->
     <div id="subjanela-gastos" class="modal-overlay">
         <div class="modal-content space-y-4">
             <div class="flex justify-between items-center border-b border-gray-700 pb-2">
@@ -279,21 +270,18 @@
         </div>
     </div>
 
-    <!-- MODAL DE TRANSFERÊNCIA / RESGATE -->
+    <!-- MODAL TRANSFERÊNCIA -->
     <div id="modal-transferencia" class="modal-overlay">
         <div class="modal-content space-y-4">
             <div class="flex justify-between items-center border-b border-gray-700 pb-2">
                 <h3 id="transf-titulo" class="text-sm font-bold text-green-400 uppercase tracking-wider">Resgatar Dinheiro</h3>
                 <button onclick="fecharModalTransferencia()" class="text-gray-400 text-lg font-bold">✕</button>
             </div>
-            
             <p id="transf-instrucao" class="text-xs text-gray-300 leading-relaxed"></p>
-
             <div>
                 <label class="block text-[10px] uppercase font-bold text-white mb-1">Valor do Resgate (R$):</label>
                 <input type="number" id="transf-valor" inputmode="decimal" placeholder="0,00" class="input-autonomo font-bold">
             </div>
-
             <div class="grid grid-cols-2 gap-2 pt-2 text-xs font-bold">
                 <button onclick="confirmarTransferencia()" class="bg-green-600 hover:bg-green-500 py-3 rounded-xl text-white uppercase">Confirmar</button>
                 <button onclick="fecharModalTransferencia()" class="bg-gray-700 hover:bg-gray-600 py-3 rounded-xl text-gray-300 uppercase">Cancelar</button>
@@ -301,7 +289,7 @@
         </div>
     </div>
 
-    <!-- MODAL DE EDIÇÃO / AJUSTE HISTÓRICO COMPACTO -->
+    <!-- MODAL EDIÇÃO -->
     <div id="modal-edicao" class="modal-overlay">
         <div class="modal-content space-y-3">
             <div class="flex justify-between items-center border-b border-gray-700 pb-2">
@@ -360,7 +348,7 @@
         </div>
     </div>
 
-    <!-- MODAL FECHAMENTO MENSAL -->
+    <!-- MODAL FECHAR MÊS -->
     <div id="modal-fechar-mes" class="modal-overlay">
         <div class="modal-content text-center space-y-4">
             <h3 class="text-base font-bold text-yellow-500 uppercase tracking-wider">Confirmar Fechamento</h3>
@@ -372,7 +360,7 @@
         </div>
     </div>
 
-    <!-- FOOTER: BACKUP FIXO -->
+    <!-- FOOTER -->
     <footer class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-gray-950 border-t border-gray-800 p-2.5 grid grid-cols-2 gap-3 z-50">
         <button onclick="exportarBackup()" class="bg-gray-900 border border-gray-700 text-gray-300 font-bold py-2.5 rounded-xl text-[10px] uppercase tracking-wider">📦 Salvar Backup</button>
         <label class="bg-gray-900 border border-gray-700 text-gray-300 font-bold py-2.5 rounded-xl text-[10px] uppercase tracking-wider text-center cursor-pointer block">
@@ -512,9 +500,11 @@
             document.getElementById('total-reserva-aba').innerText = formatarMoeda(totalRes);
             document.getElementById('total-investimento-aba').innerText = formatarMoeda(totalInv);
 
-            let rascunhoTotal = 0;
-            itensGastosTemporarios.forEach(i => rascunhoTotal += i.valor);
-            document.getElementById('pessoal').value = rascunhoTotal > 0 ? formatarMoeda(rascunhoTotal) : 'R$ 0,00 calculado';
+            if (lancamentoEmEdicao === null) {
+                let rascunhoTotal = 0;
+                itensGastosTemporarios.forEach(i => rascunhoTotal += i.valor);
+                document.getElementById('pessoal').value = rascunhoTotal > 0 ? formatarMoeda(rascunhoTotal) : 'R$ 0,00 calculado';
+            }
 
             const tbody = document.getElementById('historico-body');
             tbody.textContent = '';
@@ -587,12 +577,19 @@
 
         /* PLANILHA DE GASTOS PESSOAIS */
         function abrirSubjanelaGastos() {
+            if (lancamentoEmEdicao !== null) {
+                const item = dados.historico[lancamentoEmEdicao];
+                itensGastosTemporarios = item.detalheGastos ? [...item.detalheGastos] : [];
+            }
             document.getElementById('subjanela-gastos').classList.add('active');
             renderizarListaSubjanela();
         }
 
         function fecharSubjanelaGastos() {
             document.getElementById('subjanela-gastos').classList.remove('active');
+            if (lancamentoEmEdicao === null) {
+                itensGastosTemporarios = JSON.parse(localStorage.getItem('rascunho_gastos_dia')) || [];
+            }
         }
 
         function salvarRascunhoGastos() {
@@ -669,6 +666,8 @@
             itensGastosTemporarios.forEach(i => totalCalculado += i.valor);
             if (lancamentoEmEdicao !== null) {
                 document.getElementById('edit-pessoal').value = totalCalculado;
+                dados.historico[lancamentoEmEdicao].pessoal = totalCalculado;
+                dados.historico[lancamentoEmEdicao].detalheGastos = [...itensGastosTemporarios];
             } else {
                 document.getElementById('pessoal').value = totalCalculado > 0 ? formatarMoeda(totalCalculado) : 'R$ 0,00 calculado';
             }
@@ -781,8 +780,6 @@
 
         function reabrirPlanilhaAjuste() {
             if (lancamentoEmEdicao === null) return;
-            const item = dados.historico[lancamentoEmEdicao];
-            itensGastosTemporarios = item.detalheGastos ? [...item.detalheGastos] : [];
             abrirSubjanelaGastos();
         }
 
@@ -790,6 +787,7 @@
             document.getElementById('modal-edicao').classList.remove('active'); 
             lancamentoEmEdicao = null; 
             itensGastosTemporarios = JSON.parse(localStorage.getItem('rascunho_gastos_dia')) || [];
+            atualizarUI();
         }
 
         function salvarEdicao() {
@@ -807,7 +805,6 @@
 
             localStorage.setItem('meu_caixa_data', JSON.stringify(dados));
             fecharModal(); 
-            atualizarUI();
         }
 
         function deletarLancamento() {
@@ -816,7 +813,6 @@
                 dados.historico.splice(lancamentoEmEdicao, 1);
                 localStorage.setItem('meu_caixa_data', JSON.stringify(dados));
                 fecharModal(); 
-                atualizarUI();
             }
         }
 
@@ -866,7 +862,7 @@
             }
         }
 
-        /* LOGÍSTICA DE BACKUP */
+        /* BACKUP */
         function exportarBackup() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dados));
             const dl = document.createElement('a');
@@ -894,7 +890,7 @@
             if (input.files.length > 0) reader.readAsText(input.files[0]);
         }
 
-        /* REGISTRO DO SERVICE WORKER */
+        /* SERVICE WORKER */
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')

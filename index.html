@@ -165,7 +165,7 @@
                     📝 Detalhar Gastos
                 </button>
             </div>
-            <input type="number" id="pessoal" readonly placeholder="R$ 0,00 calculado" class="input-bloqueado font-bold">
+            <input type="text" id="pessoal" readonly placeholder="R$ 0,00 calculado" class="input-bloqueado font-bold">
         </div>
 
         <!-- RESERVAS E INVESTIMENTOS -->
@@ -197,7 +197,7 @@
             <div class="bg-gray-800 p-2 rounded-xl"><span class="block text-[9px] text-orange-400 font-bold uppercase">Fundo Emergência</span><span id="total-reserva-aba" class="font-bold text-orange-400 text-sm">R$ 0,00</span></div>
             <div class="bg-gray-800 p-2 rounded-xl"><span class="block text-[9px] text-purple-400 font-bold uppercase">Poupança</span><span id="total-investimento-aba" class="font-bold text-purple-400 text-sm">R$ 0,00</span></div>
         </div>
-        <button onclick="abrirFecharMes()" class="w-full bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-200 font-bold py-3 rounded-xl text-xs uppercase tracking-wider">
+        <button onclick="abrirFecharMes()" class="w-full bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-wider">
             📅 Fechar Balanço Mensal
         </button>
     </div>
@@ -205,7 +205,7 @@
     <!-- HISTÓRICO DIÁRIO COM SCROLL FIXO -->
     <div class="mt-6">
         <div class="flex justify-between items-center mb-2 px-1">
-            <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Histórico Recentemente</h2>
+            <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Histórico Recente</h2>
             <button onclick="limparDados()" class="text-[9px] text-red-500 font-bold uppercase border border-red-900 px-2 py-1 rounded-lg">Zerar Tudo</button>
         </div>
         <div class="rounded-xl border-2 border-gray-800 shadow-md overflow-hidden">
@@ -333,7 +333,12 @@
 
                 <div>
                     <label class="block text-red-400 font-bold uppercase text-[10px] mb-0.5">Gastos Pessoais (Total)</label>
-                    <input type="number" id="edit-pessoal" class="w-full bg-gray-800 border border-gray-700 p-2 rounded-lg text-white font-bold">
+                    <div class="flex gap-2">
+                        <input type="number" id="edit-pessoal" readonly class="w-full bg-gray-900 border border-gray-700 p-2 rounded-lg text-gray-300 font-bold">
+                        <button onclick="reabrirPlanilhaAjuste()" class="bg-gray-800 hover:bg-gray-700 border border-blue-500 text-blue-400 font-bold px-3 py-1 rounded-lg text-[10px] uppercase whitespace-nowrap">
+                            📋 Reabrir
+                        </button>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-2">
@@ -509,9 +514,7 @@
 
             let rascunhoTotal = 0;
             itensGastosTemporarios.forEach(i => rascunhoTotal += i.valor);
-            if (rascunhoTotal > 0 && !document.getElementById('pessoal').value) {
-                document.getElementById('pessoal').value = rascunhoTotal.toFixed(2);
-            }
+            document.getElementById('pessoal').value = rascunhoTotal > 0 ? formatarMoeda(rascunhoTotal) : 'R$ 0,00 calculado';
 
             const tbody = document.getElementById('historico-body');
             tbody.textContent = '';
@@ -593,7 +596,15 @@
         }
 
         function salvarRascunhoGastos() {
-            localStorage.setItem('rascunho_gastos_dia', JSON.stringify(itensGastosTemporarios));
+            if (lancamentoEmEdicao !== null) {
+                dados.historico[lancamentoEmEdicao].detalheGastos = [...itensGastosTemporarios];
+                let sum = 0;
+                itensGastosTemporarios.forEach(i => sum += i.valor);
+                dados.historico[lancamentoEmEdicao].pessoal = sum;
+                document.getElementById('edit-pessoal').value = sum;
+            } else {
+                localStorage.setItem('rascunho_gastos_dia', JSON.stringify(itensGastosTemporarios));
+            }
         }
 
         function adicionarItemNaLista() {
@@ -656,7 +667,11 @@
         function confirmarSubjanelaGastos() {
             let totalCalculado = 0;
             itensGastosTemporarios.forEach(i => totalCalculado += i.valor);
-            document.getElementById('pessoal').value = totalCalculado > 0 ? totalCalculado.toFixed(2) : '';
+            if (lancamentoEmEdicao !== null) {
+                document.getElementById('edit-pessoal').value = totalCalculado;
+            } else {
+                document.getElementById('pessoal').value = totalCalculado > 0 ? formatarMoeda(totalCalculado) : 'R$ 0,00 calculado';
+            }
             fecharSubjanelaGastos();
         }
 
@@ -705,7 +720,10 @@
             const faturamento = parseFloat(document.getElementById('faturamento').value) || 0;
             const rendaExtra = parseFloat(document.getElementById('renda-extra').value) || 0;
             const gasolina = parseFloat(document.getElementById('gasolina').value) || 0;
-            const pessoal = parseFloat(document.getElementById('pessoal').value) || 0;
+            
+            let pessoal = 0;
+            itensGastosTemporarios.forEach(i => pessoal += i.valor);
+
             const reservaFinanceira = parseFloat(document.getElementById('reserva-financeira').value) || 0;
             const investimento = parseFloat(document.getElementById('investimento').value) || 0;
 
@@ -725,7 +743,7 @@
 
             localStorage.setItem('meu_caixa_data', JSON.stringify(dados));
 
-            ['faturamento', 'renda-extra', 'gasolina', 'pessoal', 'reserva-financeira', 'investimento'].forEach(id => {
+            ['faturamento', 'renda-extra', 'gasolina', 'reserva-financeira', 'investimento'].forEach(id => {
                 document.getElementById(id).value = '';
             });
 
@@ -761,9 +779,17 @@
             document.getElementById('modal-edicao').classList.add('active');
         }
 
+        function reabrirPlanilhaAjuste() {
+            if (lancamentoEmEdicao === null) return;
+            const item = dados.historico[lancamentoEmEdicao];
+            itensGastosTemporarios = item.detalheGastos ? [...item.detalheGastos] : [];
+            abrirSubjanelaGastos();
+        }
+
         function fecharModal() { 
             document.getElementById('modal-edicao').classList.remove('active'); 
             lancamentoEmEdicao = null; 
+            itensGastosTemporarios = JSON.parse(localStorage.getItem('rascunho_gastos_dia')) || [];
         }
 
         function salvarEdicao() {
@@ -773,13 +799,7 @@
             item.faturamento = parseFloat(document.getElementById('edit-faturamento').value) || 0;
             item.rendaExtra = parseFloat(document.getElementById('edit-renda-extra').value) || 0;
             item.gasolina = parseFloat(document.getElementById('edit-gasolina').value) || 0;
-            
-            const novoPessoal = parseFloat(document.getElementById('edit-pessoal').value) || 0;
-            if (novoPessoal !== item.pessoal) {
-                item.pessoal = novoPessoal;
-                item.detalheGastos = []; 
-            }
-
+            item.pessoal = parseFloat(document.getElementById('edit-pessoal').value) || 0;
             item.reservaFinanceira = parseFloat(document.getElementById('edit-reserva-financeira').value) || 0;
             item.investimento = parseFloat(document.getElementById('edit-investimento').value) || 0;
             

@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Controle Financeiro Pro v1.1</title>
+    <title>Meu Caixa</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Finanças Pro">
+    <meta name="apple-mobile-web-app-title" content="Meu Caixa">
     <meta name="theme-color" content="#111111">
     <link rel="manifest" href="./manifest.json">
     <link rel="icon" type="image/png" href="./icon-192.png">
@@ -66,7 +66,6 @@
             max-height: 85vh;
             overflow-y: auto;
         }
-        /* Fim do efeito papiro: histórico com rolagem interna */
         .historico-scroll {
             max-height: 250px;
             overflow-y: auto;
@@ -152,13 +151,13 @@
             </div>
         </div>
 
-        <!-- SAÍDA OPERACIONAL (SEM MANUTENÇÃO) -->
+        <!-- SAÍDA OPERACIONAL -->
         <div>
             <label class="block text-xs font-black text-white mb-1 ml-1 uppercase tracking-wide">Combustível</label>
             <input type="number" id="gasolina" inputmode="decimal" placeholder="0,00" class="input-autonomo">
         </div>
 
-        <!-- GASTOS PESSOAIS (PLANILHA) -->
+        <!-- GASTOS PESSOAIS -->
         <div class="bg-gray-950 p-3 rounded-xl border border-gray-800 space-y-2">
             <div class="flex justify-between items-center">
                 <label class="block text-xs font-black text-red-400 uppercase tracking-wide ml-1">Gastos Pessoais (-)</label>
@@ -384,7 +383,7 @@
     </div>
 
     <script>
-        let dados = JSON.parse(localStorage.getItem('financeiro_pro')) || {
+        let dados = JSON.parse(localStorage.getItem('meu_caixa_data')) || JSON.parse(localStorage.getItem('financeiro_pro')) || {
             saldoAcumulado: 0,
             historico: [],
             mesesAnteriores: [],
@@ -453,7 +452,6 @@
                 totalInv += parseFloat(item.investimento) || 0;
             });
 
-            // Adiciona valores de meses anteriores arquivados se houver
             let resAnterior = 0, invAnterior = 0, salAnterior = 0;
             dados.mesesAnteriores.forEach(m => {
                 salAnterior += parseFloat(m.saldoFinalNoMes) || 0;
@@ -509,7 +507,6 @@
             document.getElementById('total-reserva-aba').innerText = formatarMoeda(totalRes);
             document.getElementById('total-investimento-aba').innerText = formatarMoeda(totalInv);
 
-            // Carrega valor de rascunho de gastos pessoais no input bloqueado caso exista
             let rascunhoTotal = 0;
             itensGastosTemporarios.forEach(i => rascunhoTotal += i.valor);
             if (rascunhoTotal > 0 && !document.getElementById('pessoal').value) {
@@ -585,7 +582,7 @@
             verificarTravaDiaria();
         }
 
-        /* PLANILHA DE GASTOS PESSOAIS E RASCUNHO */
+        /* PLANILHA DE GASTOS PESSOAIS */
         function abrirSubjanelaGastos() {
             document.getElementById('subjanela-gastos').classList.add('active');
             renderizarListaSubjanela();
@@ -698,7 +695,7 @@
                 dados.transferenciasPoupanca = (parseFloat(dados.transferenciasPoupanca) || 0) + valor;
             }
 
-            localStorage.setItem('financeiro_pro', JSON.stringify(dados));
+            localStorage.setItem('meu_caixa_data', JSON.stringify(dados));
             fecharModalTransferencia();
             atualizarUI();
         }
@@ -726,13 +723,12 @@
                 timestamp: new Date().getTime()
             });
 
-            localStorage.setItem('financeiro_pro', JSON.stringify(dados));
+            localStorage.setItem('meu_caixa_data', JSON.stringify(dados));
 
             ['faturamento', 'renda-extra', 'gasolina', 'pessoal', 'reserva-financeira', 'investimento'].forEach(id => {
                 document.getElementById(id).value = '';
             });
 
-            // Limpa o rascunho do dia após salvar
             itensGastosTemporarios = [];
             localStorage.removeItem('rascunho_gastos_dia');
 
@@ -789,7 +785,7 @@
             
             item.saldoDia = (item.faturamento + item.rendaExtra) - item.gasolina - item.pessoal - item.reservaFinanceira - item.investimento;
 
-            localStorage.setItem('financeiro_pro', JSON.stringify(dados));
+            localStorage.setItem('meu_caixa_data', JSON.stringify(dados));
             fecharModal(); 
             atualizarUI();
         }
@@ -798,7 +794,7 @@
             if (lancamentoEmEdicao === null) return;
             if (confirm('Deseja excluir este registro definitivamente?')) {
                 dados.historico.splice(lancamentoEmEdicao, 1);
-                localStorage.setItem('financeiro_pro', JSON.stringify(dados));
+                localStorage.setItem('meu_caixa_data', JSON.stringify(dados));
                 fecharModal(); 
                 atualizarUI();
             }
@@ -826,7 +822,7 @@
             });
             dados.historico = []; 
 
-            localStorage.setItem('financeiro_pro', JSON.stringify(dados));
+            localStorage.setItem('meu_caixa_data', JSON.stringify(dados));
             fecharModalMes(); 
             atualizarUI();
             alert(`Período ${periodo} fechado e consolidado.`);
@@ -835,7 +831,7 @@
         function deletarMesAnterior(index) {
             if (confirm('Atenção: Excluir um período fechado alterará seu caixa acumulado vitalício. Deseja continuar?')) {
                 dados.mesesAnteriores.splice(index, 1);
-                localStorage.setItem('financeiro_pro', JSON.stringify(dados));
+                localStorage.setItem('meu_caixa_data', JSON.stringify(dados));
                 atualizarUI();
             }
         }
@@ -843,7 +839,7 @@
         function limparDados() {
             if (confirm('Deseja apagar todo o banco de dados do aplicativo?')) {
                 dados = { saldoAcumulado: 0, historico: [], mesesAnteriores: [], transferenciasReserva: 0, transferenciasPoupanca: 0 };
-                localStorage.setItem('financeiro_pro', JSON.stringify(dados));
+                localStorage.setItem('meu_caixa_data', JSON.stringify(dados));
                 localStorage.removeItem('rascunho_gastos_dia');
                 itensGastosTemporarios = [];
                 atualizarUI();
@@ -855,7 +851,7 @@
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dados));
             const dl = document.createElement('a');
             dl.setAttribute("href", dataStr);
-            dl.setAttribute("download", `backup_financeiro_${new Date().toISOString().slice(0,10)}.txt`);
+            dl.setAttribute("download", `backup_meucaixa_${new Date().toISOString().slice(0,10)}.txt`);
             document.body.appendChild(dl); dl.click(); dl.remove();
         }
 
@@ -866,7 +862,7 @@
                     const dadosImportados = JSON.parse(reader.result);
                     if (dadosImportados && Array.isArray(dadosImportados.historico)) {
                         dados = dadosImportados; 
-                        localStorage.setItem('financeiro_pro', JSON.stringify(dados));
+                        localStorage.setItem('meu_caixa_data', JSON.stringify(dados));
                         atualizarUI(); 
                         alert('Backup restaurado com sucesso.');
                     } else {
@@ -878,8 +874,13 @@
             if (input.files.length > 0) reader.readAsText(input.files[0]);
         }
 
+        /* REGISTRO DO SERVICE WORKER */
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(err => console.error(err));
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then((reg) => console.log('Service Worker registrado:', reg.scope))
+                    .catch((err) => console.error('Erro ao registrar Service Worker:', err));
+            });
         }
         atualizarUI();
     </script>

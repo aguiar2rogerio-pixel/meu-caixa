@@ -1,4 +1,4 @@
-const CACHE_NAME = 'meu-caixa-v1.2'; // Incremente esta versão sempre que mudar o código
+const CACHE_NAME = 'meu-caixa-v2.0'; // Nome atualizado do cache
 const ASSETS = [
   './',
   './index.html',
@@ -8,12 +8,12 @@ const ASSETS = [
   './manifest.json'
 ];
 
-// Instalação e Cache
+// Instalação
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
   );
-  self.skipWaiting(); // Força o Service Worker a se tornar ativo imediatamente
+  self.skipWaiting();
 });
 
 // Limpeza de caches antigos
@@ -23,21 +23,32 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheName !== CACHE_NAME) {
-            console.log('Removendo cache antigo:', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
     })
   );
-  self.clients.claim(); // Assume o controle das abas abertas imediatamente
+  self.clients.claim();
 });
 
-// Estratégia de Fetch
+// Estratégia Network First (Prioriza busca no servidor)
 self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
-    })
+    fetch(event.request)
+      .then((networkResponse) => {
+        // Se a rede responder, atualiza o cache e entrega o arquivo novo
+        if (networkResponse && networkResponse.status === 200) {
+          const responseClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseClone);
+          });
+        }
+        return networkResponse;
+      })
+      .catch(() => {
+        // Se estiver sem internet, usa o cache local
+        return caches.match(event.request);
+      })
   );
 });

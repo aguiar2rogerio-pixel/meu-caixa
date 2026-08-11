@@ -82,21 +82,21 @@
             <div id="saldo-total" class="text-3xl font-black text-green-500">R$ 0,00</div>
         </div>
 
-        <div class="grid grid-cols-2 gap-2 text-left">
-            <div class="bg-gray-900 border border-orange-500/30 p-2.5 rounded-2xl flex flex-col justify-between">
+        <div class="grid grid-cols-2 gap-2 text-center">
+            <div class="bg-gray-900 border border-orange-500/30 p-2.5 rounded-2xl flex flex-col justify-between items-center">
                 <div>
                     <span class="text-[9px] font-black uppercase text-orange-400 block tracking-wider">Fundo Emergência</span>
-                    <span id="saldo-fundo-emergencia" class="text-base font-bold text-orange-400">R$ 0,00</span>
+                    <span id="saldo-fundo-emergencia" class="text-base font-bold text-orange-400 block mt-0.5">R$ 0,00</span>
                 </div>
                 <button type="button" onclick="abrirModalTransferencia('emergencia')" class="mt-2 w-full bg-orange-950/80 hover:bg-orange-900 border border-orange-600 text-orange-300 text-[10px] font-bold py-1 rounded-lg uppercase tracking-wider">
                     ⇄ Resgatar
                 </button>
             </div>
 
-            <div class="bg-gray-900 border border-purple-500/30 p-2.5 rounded-2xl flex flex-col justify-between">
+            <div class="bg-gray-900 border border-purple-500/30 p-2.5 rounded-2xl flex flex-col justify-between items-center">
                 <div>
                     <span class="text-[9px] font-black uppercase text-purple-400 block tracking-wider">Poupança</span>
-                    <span id="saldo-poupanca" class="text-base font-bold text-purple-400">R$ 0,00</span>
+                    <span id="saldo-poupanca" class="text-base font-bold text-purple-400 block mt-0.5">R$ 0,00</span>
                 </div>
                 <button type="button" onclick="abrirModalTransferencia('poupanca')" class="mt-2 w-full bg-purple-950/80 hover:bg-purple-900 border border-purple-600 text-purple-300 text-[10px] font-bold py-1 rounded-lg uppercase tracking-wider">
                     ⇄ Resgatar
@@ -153,10 +153,10 @@
         </div>
 
         <div class="bg-gray-950 p-3 rounded-xl border border-gray-800 space-y-2">
-            <div class="flex justify-between items-center">
-                <label class="block text-xs font-black text-red-400 uppercase tracking-wide ml-1">Gastos do Dia (-)</label>
-                <button type="button" id="btn-detalhar" onclick="abrirSubjanelaGastos()" class="bg-red-950 hover:bg-red-900 border-2 border-red-600 text-white font-bold text-xs py-1.5 px-3 rounded-lg uppercase tracking-wider">
-                    📝 Detalhar Gastos
+            <div class="flex justify-between items-center gap-2">
+                <label class="block text-xs font-black text-red-400 uppercase tracking-wide ml-1 whitespace-nowrap">Gastos do Dia (-)</label>
+                <button type="button" id="btn-detalhar" onclick="abrirSubjanelaGastos()" class="bg-red-950 hover:bg-red-900 border border-red-600 text-white font-bold text-[10px] py-1 px-2.5 rounded-lg uppercase tracking-wider whitespace-nowrap">
+                    📝 Detalhar
                 </button>
             </div>
             <input type="text" id="pessoal" readonly placeholder="R$ 0,00 calculado" class="input-bloqueado font-bold">

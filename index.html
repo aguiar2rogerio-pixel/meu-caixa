@@ -127,8 +127,8 @@
                     <span id="last-gastos" class="font-bold text-red-400">R$ 0</span>
                 </div>
                 <div class="bg-gray-800 p-2 rounded-xl">
-                    <span class="block text-[9px] text-white uppercase font-bold mb-0.5">Guardado</span>
-                    <span id="last-reserva" class="font-bold text-orange-400">R$ 0</span>
+                    <span class="block text-[9px] text-white uppercase font-bold mb-0.5">Sdo Dia</span>
+                    <span id="last-reserva" class="font-bold text-green-400">R$ 0</span>
                 </div>
             </div>
         </div>
@@ -154,7 +154,7 @@
 
         <div class="bg-gray-950 p-3 rounded-xl border border-gray-800 space-y-2">
             <div class="flex justify-between items-center">
-                <label class="block text-xs font-black text-red-400 uppercase tracking-wide ml-1">Gastos Pessoais (-)</label>
+                <label class="block text-xs font-black text-red-400 uppercase tracking-wide ml-1">Gastos do Dia (-)</label>
                 <button type="button" id="btn-detalhar" onclick="abrirSubjanelaGastos()" class="bg-red-950 hover:bg-red-900 border-2 border-red-600 text-white font-bold text-xs py-1.5 px-3 rounded-lg uppercase tracking-wider">
                     📝 Detalhar Gastos
                 </button>
@@ -173,9 +173,14 @@
             </div>
         </div>
 
-        <button type="button" id="btn-salvar-principal" onclick="salvarLancamento(event)" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl text-lg shadow-md uppercase tracking-wider mt-2">
-            Salvar Lançamento do Dia
-        </button>
+        <div>
+            <button type="button" id="btn-salvar-principal" onclick="solicitarConfirmacaoSalvamento()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 rounded-xl text-sm uppercase tracking-wider shadow-md">
+                Salvar e Fechar o Dia
+            </button>
+            <p class="text-[10px] text-gray-400 text-center mt-1.5 italic">
+                Depois de salvo, este dia ficará fechado para novos lançamentos.
+            </p>
+        </div>
     </div>
 
     <!-- RESUMO DO PERÍODO -->
@@ -185,7 +190,7 @@
             <div class="bg-gray-800 p-2 rounded-xl"><span class="block text-[9px] text-white font-bold uppercase">Faturamento</span><span id="total-faturamento" class="font-bold text-green-400 text-sm">R$ 0,00</span></div>
             <div class="bg-gray-800 p-2 rounded-xl"><span class="block text-[9px] text-white font-bold uppercase">Renda Extra</span><span id="total-renda-extra" class="font-bold text-green-400 text-sm">R$ 0,00</span></div>
             <div class="bg-gray-800 p-2 rounded-xl"><span class="block text-[9px] text-white font-bold uppercase">Combustível</span><span id="total-gasolina" class="font-bold text-red-400 text-sm">R$ 0,00</span></div>
-            <div class="bg-gray-800 p-2 rounded-xl"><span class="block text-[9px] text-white font-bold uppercase">Gastos Pessoais</span><span id="total-pessoal" class="font-bold text-red-400 text-sm">R$ 0,00</span></div>
+            <div class="bg-gray-800 p-2 rounded-xl"><span class="block text-[9px] text-white font-bold uppercase">Gastos do Dia</span><span id="total-pessoal" class="font-bold text-red-400 text-sm">R$ 0,00</span></div>
             <div class="bg-gray-800 p-2 rounded-xl"><span class="block text-[9px] text-orange-400 font-bold uppercase">Fundo Emergência</span><span id="total-reserva-aba" class="font-bold text-orange-400 text-sm">R$ 0,00</span></div>
             <div class="bg-gray-800 p-2 rounded-xl"><span class="block text-[9px] text-purple-400 font-bold uppercase">Poupança</span><span id="total-investimento-aba" class="font-bold text-purple-400 text-sm">R$ 0,00</span></div>
         </div>
@@ -223,11 +228,27 @@
         <div id="meses-vazios" class="text-center text-gray-600 text-xs italic p-3">Nenhum mês arquivado ainda</div>
     </div>
 
+    <!-- MODAL CONFIRMAÇÃO FECHAMENTO DO DIA -->
+    <div id="modal-confirmar-dia" class="modal-overlay">
+        <div class="modal-content space-y-4 text-center">
+            <h3 class="text-base font-bold text-blue-400 uppercase tracking-wider">Confirmar Fechamento do Dia</h3>
+            <p class="text-xs text-gray-300 leading-relaxed">
+                Tem certeza que deseja salvar e fechar o lançamento de hoje? 
+                <br><br>
+                <span class="text-yellow-400 font-bold">Atenção:</span> Novos lançamentos para o dia de hoje serão bloqueados após a confirmação.
+            </p>
+            <div class="grid grid-cols-2 gap-2 pt-2 text-xs font-bold">
+                <button type="button" onclick="executarSalvarLancamento()" class="bg-blue-600 hover:bg-blue-500 py-3 rounded-xl text-white uppercase">Sim, Salvar</button>
+                <button type="button" onclick="fecharModalConfirmacaoDia()" class="bg-gray-700 hover:bg-gray-600 py-3 rounded-xl text-gray-300 uppercase">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL PLANILHA DE GASTOS -->
     <div id="subjanela-gastos" class="modal-overlay">
         <div class="modal-content space-y-4">
             <div class="flex justify-between items-center border-b border-gray-700 pb-2">
-                <h3 class="text-sm font-bold text-red-400 uppercase tracking-wider">Planilha de Gastos Pessoais</h3>
+                <h3 class="text-sm font-bold text-red-400 uppercase tracking-wider">Planilha de Gastos do Dia</h3>
                 <button type="button" onclick="fecharSubjanelaGastos()" class="text-gray-400 text-lg font-bold">✕</button>
             </div>
             
@@ -321,7 +342,7 @@
                 </div>
 
                 <div>
-                    <label class="block text-red-400 font-bold uppercase text-[10px] mb-0.5">Gastos Pessoais (Total)</label>
+                    <label class="block text-red-400 font-bold uppercase text-[10px] mb-0.5">Gastos do Dia (Total)</label>
                     <div class="flex gap-2">
                         <input type="number" id="edit-pessoal" readonly class="w-full bg-gray-900 border border-gray-700 p-2 rounded-lg text-gray-300 font-bold">
                         <button type="button" onclick="abrirSubjanelaGastos()" class="bg-gray-800 hover:bg-gray-700 border border-blue-500 text-blue-400 font-bold px-3 py-1 rounded-lg text-[10px] uppercase whitespace-nowrap">
@@ -409,7 +430,7 @@
 
             if (jaLancado) {
                 btnSalvar.innerText = `⚠️ ${hoje} JÁ LANÇADO (USE O AJUSTAR)`;
-                btnSalvar.className = "w-full bg-yellow-600 text-white font-bold py-4 rounded-xl text-sm uppercase tracking-wider mt-2 cursor-not-allowed";
+                btnSalvar.className = "w-full bg-yellow-600 text-white font-bold py-3.5 rounded-xl text-xs uppercase tracking-wider cursor-not-allowed";
                 btnSalvar.disabled = true;
                 btnDetalhar.disabled = true;
                 btnDetalhar.classList.remove('bg-red-950', 'hover:bg-red-900', 'border-red-600');
@@ -420,8 +441,8 @@
                     document.getElementById(id).className = "input-bloqueado";
                 });
             } else {
-                btnSalvar.innerText = "Salvar Lançamento do Dia";
-                btnSalvar.className = "w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl text-lg shadow-md uppercase tracking-wider mt-2";
+                btnSalvar.innerText = "Salvar e Fechar o Dia";
+                btnSalvar.className = "w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 rounded-xl text-sm uppercase tracking-wider shadow-md";
                 btnSalvar.disabled = false;
                 btnDetalhar.disabled = false;
                 btnDetalhar.classList.remove('bg-gray-950', 'text-gray-600', 'border-gray-800', 'cursor-not-allowed');
@@ -508,11 +529,14 @@
                 
                 const ganhoTotal = (parseFloat(ultimo.faturamento) || 0) + (parseFloat(ultimo.rendaExtra) || 0);
                 const despesaTotal = (parseFloat(ultimo.gasolina) || 0) + (parseFloat(ultimo.pessoal) || 0);
-                const retidoTotal = (parseFloat(ultimo.reservaFinanceira) || 0) + (parseFloat(ultimo.investimento) || 0);
+                const saldoDiaCalc = parseFloat(ultimo.saldoDia) || 0;
 
                 document.getElementById('last-ganho').innerText = formatarMoeda(ganhoTotal);
                 document.getElementById('last-gastos').innerText = formatarMoeda(despesaTotal);
-                document.getElementById('last-reserva').innerText = formatarMoeda(retidoTotal);
+                
+                const lastReservaEl = document.getElementById('last-reserva');
+                lastReservaEl.innerText = formatarMoeda(saldoDiaCalc);
+                lastReservaEl.className = `font-bold ${saldoDiaCalc >= 0 ? 'text-green-400' : 'text-red-400'}`;
             } else {
                 resumoContainer.classList.add('hidden');
             }
@@ -747,8 +771,8 @@
             atualizarUI();
         }
 
-        /* GRAVAÇÃO DO DIA */
-        function salvarLancamento(event) {
+        /* GRAVAÇÃO DO DIA COM CONFIRMAÇÃO */
+        function solicitarConfirmacaoSalvamento() {
             const faturamento = parseFloat(document.getElementById('faturamento').value) || 0;
             const rendaExtra = parseFloat(document.getElementById('renda-extra').value) || 0;
             const gasolina = parseFloat(document.getElementById('gasolina').value) || 0;
@@ -762,6 +786,30 @@
             if (!faturamento && !rendaExtra && !gasolina && !pessoal && !investimento && !reservaFinanceira) {
                 alert('Preencha ao menos um valor.'); return;
             }
+
+            const modal = document.getElementById('modal-confirmar-dia');
+            modal.classList.add('active');
+            modal.style.display = 'flex';
+        }
+
+        function fecharModalConfirmacaoDia() {
+            const modal = document.getElementById('modal-confirmar-dia');
+            modal.classList.remove('active');
+            modal.style.display = 'none';
+        }
+
+        function executarSalvarLancamento() {
+            fecharModalConfirmacaoDia();
+
+            const faturamento = parseFloat(document.getElementById('faturamento').value) || 0;
+            const rendaExtra = parseFloat(document.getElementById('renda-extra').value) || 0;
+            const gasolina = parseFloat(document.getElementById('gasolina').value) || 0;
+            
+            let pessoal = 0;
+            itensGastosTemporarios.forEach(i => pessoal += i.valor);
+
+            const reservaFinanceira = parseFloat(document.getElementById('reserva-financeira').value) || 0;
+            const investimento = parseFloat(document.getElementById('investimento').value) || 0;
 
             const saldoDia = (faturamento + rendaExtra) - gasolina - pessoal - reservaFinanceira - investimento;
 
@@ -938,13 +986,11 @@
                 navigator.serviceWorker.register('./sw.js').then((reg) => {
                     console.log('Service Worker registrado:', reg.scope);
                     
-                    // Verifica se há uma atualização disponível
                     reg.onupdatefound = () => {
                         const installingWorker = reg.installing;
                         installingWorker.onstatechange = () => {
                             if (installingWorker.state === 'installed') {
                                 if (navigator.serviceWorker.controller) {
-                                    // Novo conteúdo disponível, avisa o usuário ou recarrega
                                     console.log('Nova versão encontrada! Recarregando...');
                                     window.location.reload();
                                 }
@@ -954,7 +1000,6 @@
                 }).catch((err) => console.error('Erro ao registrar Service Worker:', err));
             });
 
-            // Garante que o refresh só aconteça uma vez
             let refreshing = false;
             navigator.serviceWorker.addEventListener('controllerchange', () => {
                 if (!refreshing) {
@@ -966,7 +1011,6 @@
         carregarRascunhoCampos();
         atualizarUI();
 
-        // Listeners para auto-salvamento dos campos
         ['faturamento', 'renda-extra', 'gasolina', 'reserva-financeira', 'investimento'].forEach(id => {
             document.getElementById(id).addEventListener('input', salvarRascunhoCampos);
         });

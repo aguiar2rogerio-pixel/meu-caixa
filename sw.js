@@ -1,4 +1,4 @@
-const CACHE_NAME = 'meu-caixa-v1.1'; // Incremente esta versão sempre que mudar o código
+const CACHE_NAME = 'meu-caixa-v1.2'; // Incremente esta versão sempre que mudar o código
 const ASSETS = [
   './',
   './index.html',

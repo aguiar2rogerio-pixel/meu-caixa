@@ -352,23 +352,24 @@
         </a>
     </div>
 
-    <!-- SCRIPTS ORGANIZADOS -->
-    <script src="js/app.js"></script>
-    <script src="js/storage.js"></script>
-    <script src="js/ui.js"></script>
-    <script src="js/premium.js"></script>
+    <!-- SCRIPTS CORRIGIDOS E ORDENADOS -->
+    <script src="js/storage.js" defer></script>
+    <script src="js/ui.js" defer></script>
+    <script src="js/premium.js" defer></script>
+    <script src="js/app.js" defer></script>
+    
     <script>
-        // Inicialização
         document.addEventListener('DOMContentLoaded', () => {
-            carregarRascunhoCampos();
-            verificarStatusPremium();
-            atualizarUI();
-        });
+            if (typeof carregarRascunhoCampos === 'function') carregarRascunhoCampos();
+            if (typeof verificarStatusPremium === 'function') verificarStatusPremium();
+            if (typeof atualizarUI === 'function') atualizarUI();
 
-        // Auto-salvar rascunho ao digitar
-        ['faturamento', 'renda-extra', 'gasolina', 'reserva-financeira', 'investimento'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.addEventListener('input', salvarRascunhoCampos);
+            ['faturamento', 'renda-extra', 'gasolina', 'reserva-financeira', 'investimento'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('input', () => {
+                    if (typeof salvarRascunhoCampos === 'function') salvarRascunhoCampos();
+                });
+            });
         });
     </script>
 </body>

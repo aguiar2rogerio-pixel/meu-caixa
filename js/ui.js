@@ -1,261 +1,184 @@
-// ======================
-// GERENCIAMENTO DA INTERFACE — MEU CAIXA
-// Liga todos os botões e elementos da tela
-// ======================
+// ===== MEU CAIXA — GERENCIAMENTO DA INTERFACE (UI) =====
 
-// Elementos da Tela
-const elements = {
-  // Formulário de Registro
-  formRegistro: document.getElementById('form-registro'),
-  tipoLancamento: document.getElementById('tipo-lancamento'),
-  descricao: document.getElementById('descricao'),
-  valor: document.getElementById('valor'),
-  data: document.getElementById('data'),
-  btnSalvar: document.getElementById('btn-salvar'),
+// ATUALIZA TODA A TELA (SALDOS, HISTÓRICO, BALANÇO MENSAL)
+function atualizarUI() {
+    if (typeof verificarTravaDiaria === 'function') verificarTravaDiaria();
+    if (typeof verificarStatusPremium === 'function') verificarStatusPremium();
 
-  // Filtros
-  filtroMes: document.getElementById('filtro-mes'),
-  filtroAno: document.getElementById('filtro-ano'),
-  btnFiltrar: document.getElementById('btn-filtrar'),
-  btnLimparFiltro: document.getElementById('btn-limpar-filtro'),
+    let acumuladoFaturamento = 0;
+    let acumuladoRendaExtra = 0;
+    let acumuladoGasolina = 0;
+    let acumuladoPessoal = 0;
+    let acumuladoReserva = 0;
+    let acumuladoInvestimento = 0;
 
-  // Resumo / Saldo
-  saldoTotal: document.getElementById('saldo-total'),
-  totalEntradas: document.getElementById('total-entradas'),
-  totalSaidas: document.getElementById('total-saidas'),
-  saldoMes: document.getElementById('saldo-mes'),
-
-  // Lista de Lançamentos
-  listaLancamentos: document.getElementById('lista-lancamentos'),
-  semRegistros: document.getElementById('sem-registros'),
-
-  // Premium
-  btnPremium: document.getElementById('btn-premium'),
-  avisoPremium: document.getElementById('aviso-premium'),
-  btnFecharAviso: document.getElementById('btn-fechar-aviso'),
-
-  // Navegação
-  linkPrivacidade: document.getElementById('link-privacidade')
-};
-
-// ======================
-// INICIALIZA TODOS OS EVENTOS DOS BOTÕES
-// ======================
-function inicializarUI() {
-  // Formulário — Salvar lançamento
-  if (elements.formRegistro) {
-    elements.formRegistro.addEventListener('submit', aoSubmeterRegistro);
-  }
-
-  // Botões de filtro
-  if (elements.btnFiltrar) {
-    elements.btnFiltrar.addEventListener('click', aplicarFiltros);
-  }
-  if (elements.btnLimparFiltro) {
-    elements.btnLimparFiltro.addEventListener('click', limparFiltros);
-  }
-
-  // Botão Premium
-  if (elements.btnPremium) {
-    elements.btnPremium.addEventListener('click', () => {
-      window.location.href = 'paginas/premium.html';
+    // Calcula acumulados do histórico do período
+    dados.historico.forEach(item => {
+        acumuladoFaturamento += (item.faturamento || 0);
+        acumuladoRendaExtra += (item.rendaExtra || 0);
+        acumuladoGasolina += (item.gasolina || 0);
+        acumuladoPessoal += (item.pessoal || 0);
+        acumuladoReserva += (item.reservaFinanceira || 0);
+        acumuladoInvestimento += (item.investimento || 0);
     });
-  }
 
-  // Aviso Premium
-  if (elements.btnFecharAviso) {
-    elements.btnFecharAviso.addEventListener('click', () => {
-      if (elements.avisoPremium) elements.avisoPremium.style.display = 'none';
+    // Saldos das Caixas
+    const totalGanhos = acumuladoFaturamento + acumuladoRendaExtra;
+    const totalGastos = acumuladoGasolina + acumuladoPessoal;
+    const saldoReservaFinanceira = acumuladoReserva - (dados.transferenciasReserva || 0);
+    const saldoPoupanca = acumuladoInvestimento - (dados.transferenciasPoupanca || 0);
+    
+    // Disponível é o saldo retido que sobrou do faturamento/gastos/reservas + os resgates efetuados
+    const saldoDisponivel = (totalGanhos - totalGastos - acumuladoReserva - acumuladoInvestimento) + (dados.transferenciasReserva || 0) + (dados.transferenciasPoupanca || 0);
+    const saldoTotalGeral = saldoDisponivel + saldoReservaFinanceira + saldoPoupanca;
+
+    // Atualiza Caixas no Topo
+    const elTotal = document.getElementById('saldo-total');
+    const elEmergencia = document.getElementById('saldo-fundo-emergencia');
+    const elPoupanca = document.getElementById('saldo-poupanca');
+    const elDisponivel = document.getElementById('saldo-disponivel');
+
+    if (elTotal) elTotal.innerText = formatarMoeda(saldoTotalGeral);
+    if (elEmergencia) elEmergencia.innerText = formatarMoeda(saldoReservaFinanceira);
+    if (elPoupanca) elPoupanca.innerText = formatarMoeda(saldoPoupanca);
+    if (elDisponivel) elDisponivel.innerText = formatarMoeda(saldoDisponivel);
+
+    // Atualiza Tabela de Balanço Mensal
+    if (document.getElementById('total-faturamento')) document.getElementById('total-faturamento').innerText = formatarMoeda(acumuladoFaturamento);
+    if (document.getElementById('total-renda-extra')) document.getElementById('total-renda-extra').innerText = formatarMoeda(acumuladoRendaExtra);
+    if (document.getElementById('total-gasolina')) document.getElementById('total-gasolina').innerText = formatarMoeda(acumuladoGasolina);
+    if (document.getElementById('total-pessoal')) document.getElementById('total-pessoal').innerText = formatarMoeda(acumuladoPessoal);
+    if (document.getElementById('total-reserva-aba')) document.getElementById('total-reserva-aba').innerText = formatarMoeda(saldoReservaFinanceira);
+    if (document.getElementById('total-investimento-aba')) document.getElementById('total-investimento-aba').innerText = formatarMoeda(saldoPoupanca);
+
+    // Renderiza o Último Registro se existir
+    const containerUltimo = document.getElementById('ultimo-resumo-container');
+    if (containerUltimo) {
+        if (dados.historico.length > 0) {
+            const u = dados.historico[0];
+            containerUltimo.classList.remove('hidden');
+            if (document.getElementById('last-date')) document.getElementById('last-date').innerText = u.data;
+            if (document.getElementById('last-ganho')) document.getElementById('last-ganho').innerText = formatarMoeda((u.faturamento || 0) + (u.rendaExtra || 0));
+            if (document.getElementById('last-gastos')) document.getElementById('last-gastos').innerText = formatarMoeda((u.gasolina || 0) + (u.pessoal || 0));
+            if (document.getElementById('last-reserva')) document.getElementById('last-reserva').innerText = formatarMoeda((u.faturamento || 0) + (u.rendaExtra || 0) - (u.gasolina || 0) - (u.pessoal || 0));
+        } else {
+            containerUltimo.classList.add('hidden');
+        }
+    }
+
+    renderizarHistorico();
+}
+
+// RENDERIZA LISTA DO HISTÓRICO
+function renderizarHistorico() {
+    const tbody = document.getElementById('historico-body');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (dados.historico.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-gray-500 text-xs italic">Nenhum lançamento recente</td></tr>`;
+        return;
+    }
+
+    dados.historico.forEach((item, index) => {
+        const saldoDia = (item.faturamento || 0) + (item.rendaExtra || 0) - (item.gasolina || 0) - (item.pessoal || 0);
+        const tr = document.createElement('tr');
+        tr.className = "border-b border-gray-800 hover:bg-gray-800/50";
+        tr.innerHTML = `
+            <td class="p-3 font-bold text-gray-300 text-xs">${item.data}</td>
+            <td class="p-3 font-bold text-xs ${saldoDia >= 0 ? 'text-green-400' : 'text-red-400'}">${formatarMoeda(saldoDia)}</td>
+            <td class="p-3 text-right">
+                <button type="button" onclick="abrirModalEdicao(${index})" class="text-blue-400 hover:text-blue-300 font-bold text-xs bg-gray-800 px-2 py-1 rounded-md border border-gray-700">Ajustar</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
     });
-  }
+}
 
-  // Link Privacidade
-  if (elements.linkPrivacidade) {
-    elements.linkPrivacidade.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.location.href = 'privacidade.html';
+// RENDERIZA A LISTA NA PLANILHA DE GASTOS
+function renderizarListaGastos() {
+    const tbody = document.getElementById('lista-gastos-correntes-body');
+    const totalEl = document.getElementById('subjanela-total-acumulado');
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+    let total = 0;
+
+    itensGastosTemporarios.forEach((item, idx) => {
+        total += item.val;
+        const tr = document.createElement('tr');
+        tr.className = "border-b border-gray-800";
+        tr.innerHTML = `
+            <td class="p-2 text-gray-300">${item.desc}</td>
+            <td class="p-2 font-bold text-red-400">${formatarMoeda(item.val)}</td>
+            <td class="p-2 text-right">
+                <button type="button" onclick="removerItemGasto(${idx})" class="text-red-500 font-bold">✕</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
     });
-  }
 
-  // Define data de hoje automaticamente
-  if (elements.data) {
-    const hoje = new Date().toISOString().split('T')[0];
-    elements.data.value = hoje;
-  }
-
-  preencherFiltrosMesAno();
-  carregarDadosNaTela();
+    if (totalEl) totalEl.innerText = formatarMoeda(total);
 }
 
-// ======================
-// SALVAR REGISTRO
-// ======================
-function aoSubmeterRegistro(e) {
-  e.preventDefault();
+// EDIÇÃO DE LANÇAMENTO
+function abrirModalEdicao(index) {
+    lancamentoEmEdicao = index;
+    const item = dados.historico[index];
+    const modal = document.getElementById('modal-edicao');
+    if (!modal || !item) return;
 
-  const tipo = elements.tipoLancamento.value;
-  const desc = elements.descricao.value.trim();
-  const val = parseFloat(elements.valor.value);
-  const dt = elements.data.value;
+    if (document.getElementById('edit-data')) document.getElementById('edit-data').value = item.data;
+    if (document.getElementById('edit-faturamento')) document.getElementById('edit-faturamento').value = item.faturamento || 0;
+    if (document.getElementById('edit-renda-extra')) document.getElementById('edit-renda-extra').value = item.rendaExtra || 0;
+    if (document.getElementById('edit-gasolina')) document.getElementById('edit-gasolina').value = item.gasolina || 0;
+    if (document.getElementById('edit-pessoal')) document.getElementById('edit-pessoal').value = item.pessoal || 0;
+    if (document.getElementById('edit-reserva-financeira')) document.getElementById('edit-reserva-financeira').value = item.reservaFinanceira || 0;
+    if (document.getElementById('edit-investimento')) document.getElementById('edit-investimento').value = item.investimento || 0;
 
-  if (!desc || isNaN(val) || val <= 0) {
-    alert('Preencha todos os campos corretamente!');
-    return;
-  }
-
-  const registro = {
-    id: Date.now(),
-    tipo,
-    descricao: desc,
-    valor: val,
-    data: dt
-  };
-
-  // Salva no storage
-  salvarRegistro(registro);
-
-  // Limpa formulário
-  elements.descricao.value = '';
-  elements.valor.value = '';
-
-  // Atualiza tela
-  carregarDadosNaTela();
-
-  alert('✅ Lançamento salvo com sucesso!');
+    itensGastosTemporarios = item.detalhesGastos ? [...item.detalhesGastos] : [];
+    modal.classList.add('active');
 }
 
-// ======================
-// CARREGAR DADOS NA TELA
-// ======================
-function carregarDadosNaTela() {
-  const registros = obterRegistros();
-  const filtro = obterFiltros();
-  let dadosFiltrados = registros;
-
-  if (filtro.mes && filtro.ano) {
-    dadosFiltrados = registros.filter(r => {
-      const d = new Date(r.data);
-      return (d.getMonth() + 1) === parseInt(filtro.mes) &&
-             d.getFullYear() === parseInt(filtro.ano);
-    });
-  }
-
-  // Atualiza resumo
-  atualizarResumo(dadosFiltrados);
-
-  // Renderiza lista
-  renderizarLista(dadosFiltrados);
+function fecharModal() {
+    const modal = document.getElementById('modal-edicao');
+    if (modal) modal.classList.remove('active');
+    lancamentoEmEdicao = null;
+    itensGastosTemporarios = [];
 }
 
-// ======================
-// ATUALIZA RESUMO FINANCEIRO
-// ======================
-function atualizarResumo(lista) {
-  const entradas = lista.filter(r => r.tipo === 'entrada').reduce((s, r) => s + r.valor, 0);
-  const saidas = lista.filter(r => r.tipo === 'saida').reduce((s, r) => s + r.valor, 0);
-  const saldo = entradas - saidas;
+function salvarEdicao() {
+    if (lancamentoEmEdicao === null) return;
 
-  if (elements.totalEntradas) elements.totalEntradas.textContent = formatarMoeda(entradas);
-  if (elements.totalSaidas) elements.totalSaidas.textContent = formatarMoeda(saidas);
-  if (elements.saldoTotal) elements.saldoTotal.textContent = formatarMoeda(saldo);
-  if (elements.saldoMes) elements.saldoMes.textContent = formatarMoeda(saldo);
+    const item = dados.historico[lancamentoEmEdicao];
+    item.faturamento = parseFloat(document.getElementById('edit-faturamento').value) || 0;
+    item.rendaExtra = parseFloat(document.getElementById('edit-renda-extra').value) || 0;
+    item.gasolina = parseFloat(document.getElementById('edit-gasolina').value) || 0;
+    item.pessoal = parseFloat(document.getElementById('edit-pessoal').value) || 0;
+    item.reservaFinanceira = parseFloat(document.getElementById('edit-reserva-financeira').value) || 0;
+    item.investimento = parseFloat(document.getElementById('edit-investimento').value) || 0;
+    item.detalhesGastos = [...itensGastosTemporarios];
+
+    salvarDados();
+    atualizarUI();
+    fecharModal();
 }
 
-// ======================
-// RENDERIZA LISTA DE LANÇAMENTOS
-// ======================
-function renderizarLista(lista) {
-  if (!elements.listaLancamentos) return;
-
-  elements.listaLancamentos.innerHTML = '';
-
-  if (lista.length === 0) {
-    if (elements.semRegistros) elements.semRegistros.style.display = 'block';
-    return;
-  }
-
-  if (elements.semRegistros) elements.semRegistros.style.display = 'none';
-
-  // Ordena por data (mais recente primeiro)
-  lista.sort((a, b) => new Date(b.data) - new Date(a.data));
-
-  lista.forEach(reg => {
-    const item = document.createElement('div');
-    item.className = `lancamento ${reg.tipo}`;
-    item.innerHTML = `
-      <div class="info">
-        <strong>${reg.descricao}</strong>
-        <small>${formatarData(reg.data)}</small>
-      </div>
-      <div class="valor">${formatarMoeda(reg.valor)}</div>
-      <button class="btn-excluir" data-id="${reg.id}">🗑️</button>
-    `;
-    elements.listaLancamentos.appendChild(item);
-  });
-
-  // Botões excluir
-  document.querySelectorAll('.btn-excluir').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const id = parseInt(e.target.dataset.id);
-      if (confirm('Tem certeza que deseja excluir este registro?')) {
-        excluirRegistro(id);
-        carregarDadosNaTela();
-      }
-    });
-  });
+function deletarLancamento() {
+    if (lancamentoEmEdicao === null) return;
+    if (confirm('Deseja realmente apagar este lançamento do histórico?')) {
+        dados.historico.splice(lancamentoEmEdicao, 1);
+        salvarDados();
+        atualizarUI();
+        fecharModal();
+    }
 }
 
-// ======================
-// FILTROS — Mês / Ano
-// ======================
-function preencherFiltrosMesAno() {
-  if (!elements.filtroMes || !elements.filtroAno) return;
-
-  const meses = [
-    ['01','Janeiro'],['02','Fevereiro'],['03','Março'],['04','Abril'],
-    ['05','Maio'],['06','Junho'],['07','Julho'],['08','Agosto'],
-    ['09','Setembro'],['10','Outubro'],['11','Novembro'],['12','Dezembro']
-  ];
-
-  elements.filtroMes.innerHTML = '<option value="">Todos</option>';
-  meses.forEach(([valor, nome]) => {
-    elements.filtroMes.innerHTML += `<option value="${valor}">${nome}</option>`;
-  });
-
-  const anoAtual = new Date().getFullYear();
-  elements.filtroAno.innerHTML = '<option value="">Todos</option>';
-  for (let a = anoAtual - 2; a <= anoAtual + 1; a++) {
-    elements.filtroAno.innerHTML += `<option value="${a}">${a}</option>`;
-  }
-}
-
-function aplicarFiltros() {
-  const mes = elements.filtroMes?.value || '';
-  const ano = elements.filtroAno?.value || '';
-  salvarFiltros({ mes, ano });
-  carregarDadosNaTela();
-}
-
-function limparFiltros() {
-  if (elements.filtroMes) elements.filtroMes.value = '';
-  if (elements.filtroAno) elements.filtroAno.value = '';
-  salvarFiltros({ mes: '', ano: '' });
-  carregarDadosNaTela();
-}
-
-// ======================
-// FORMATADORES
-// ======================
-function formatarMoeda(valor) {
-  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
-}
-
-function formatarData(dataStr) {
-  const [ano, mes, dia] = dataStr.split('-');
-  return `${dia}/${mes}/${ano}`;
-}
-
-// ======================
-// INICIALIZA TUDO AO CARREGAR A PÁGINA
-// ======================
-document.addEventListener('DOMContentLoaded', inicializarUI);
+// EXPOSITORES PARA O ESCOPO GLOBAL
+window.atualizarUI = atualizarUI;
+window.renderizarHistorico = renderizarHistorico;
+window.renderizarListaGastos = renderizarListaGastos;
+window.abrirModalEdicao = abrirModalEdicao;
+window.fecharModal = fecharModal;
+window.salvarEdicao = salvarEdicao;
+window.deletarLancamento = deletarLancamento;

@@ -181,7 +181,6 @@ function adicionarItemNaLista() {
 
     itensGastosTemporarios.push({ desc, val });
 
-    // Salva rascunho apenas se for um lançamento novo na tela principal
     if (lancamentoEmEdicao === null) {
         localStorage.setItem('rascunho_gastos_dia', JSON.stringify(itensGastosTemporarios));
     }
@@ -205,18 +204,64 @@ function removerItemGasto(index) {
 function confirmarSubjanelaGastos() {
     const total = itensGastosTemporarios.reduce((acc, curr) => acc + curr.val, 0);
     
-    // Se estiver ajustando um lançamento existente
     if (lancamentoEmEdicao !== null) {
         const campoPessoalEdit = document.getElementById('edit-pessoal');
         if (campoPessoalEdit) campoPessoalEdit.value = total;
     } else {
-        // Se for na tela principal
         const campoPessoal = document.getElementById('pessoal');
         if (campoPessoal) campoPessoal.value = formatarMoeda(total);
         salvarRascunhoCampos();
     }
     
     fecharSubjanelaGastos();
+}
+
+// RESGATES DA POUPANÇA E RESERVA (MODAL)
+function abrirModalTransferencia(origem) {
+    origemTransferenciaAtual = origem;
+    const modal = document.getElementById('modal-transferencia');
+    const titulo = document.getElementById('transf-titulo');
+    const instrucao = document.getElementById('transf-instrucao');
+    const valorInput = document.getElementById('transf-valor');
+
+    if (valorInput) valorInput.value = '';
+
+    if (origem === 'emergencia') {
+        if (titulo) titulo.innerText = "Resgatar Fundo Emergência";
+        if (instrucao) instrucao.innerText = "Informe quanto deseja retirar do Fundo de Emergência para transferir de volta ao Caixa Disponível.";
+    } else {
+        if (titulo) titulo.innerText = "Resgatar Poupança";
+        if (instrucao) instrucao.innerText = "Informe quanto deseja retirar da Poupança para transferir de volta ao Caixa Disponível.";
+    }
+
+    if (modal) modal.classList.add('active');
+}
+
+function fecharModalTransferencia() {
+    const modal = document.getElementById('modal-transferencia');
+    if (modal) modal.classList.remove('active');
+    origemTransferenciaAtual = null;
+}
+
+function confirmarTransferencia() {
+    const valorInput = document.getElementById('transf-valor');
+    const valor = parseFloat(valorInput ? valorInput.value : 0) || 0;
+
+    if (valor <= 0) {
+        alert("Por favor, digite um valor válido.");
+        return;
+    }
+
+    if (origemTransferenciaAtual === 'emergencia') {
+        dados.transferenciasReserva = (dados.transferenciasReserva || 0) + valor;
+    } else if (origemTransferenciaAtual === 'poupanca') {
+        dados.transferenciasPoupanca = (dados.transferenciasPoupanca || 0) + valor;
+    }
+
+    if (typeof salvarDados === 'function') salvarDados();
+    if (typeof atualizarUI === 'function') atualizarUI();
+
+    fecharModalTransferencia();
 }
 
 // FECHAMENTO MENSAL
@@ -245,6 +290,8 @@ function fecharBalançoMensal() {
 
         const mesAtual = new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
 
+        if (!dados.mesesAnteriores) dados.mesesAnteriores = [];
+
         dados.mesesAnteriores.unshift({
             mes: mesAtual,
             faturamento: faturamentoTotal,
@@ -256,7 +303,7 @@ function fecharBalançoMensal() {
             saldo: (faturamentoTotal + rendaExtraTotal) - (gasolinaTotal + pessoalTotal)
         });
 
-        // Apaga o histórico diário do mês anterior para iniciar o novo
+        // Limpa lançamentos diários para iniciar o novo mês
         dados.historico = [];
 
         if (typeof salvarDados === 'function') salvarDados();
@@ -266,7 +313,7 @@ function fecharBalançoMensal() {
     }
 }
 
-// EXPOSITORES PARA ESCOPO GLOBAL
+// EXPOSITORES GLOBAIS
 window.formatarMoeda = formatarMoeda;
 window.obterDataHoje = obterDataHoje;
 window.verificarTravaDiaria = verificarTravaDiaria;
@@ -280,4 +327,7 @@ window.fecharSubjanelaGastos = fecharSubjanelaGastos;
 window.adicionarItemNaLista = adicionarItemNaLista;
 window.removerItemGasto = removerItemGasto;
 window.confirmarSubjanelaGastos = confirmarSubjanelaGastos;
+window.abrirModalTransferencia = abrirModalTransferencia;
+window.fecharModalTransferencia = fecharModalTransferencia;
+window.confirmarTransferencia = confirmarTransferencia;
 window.fecharBalançoMensal = fecharBalançoMensal;

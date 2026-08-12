@@ -1,6 +1,5 @@
 // ===== MEU CAIXA — GERENCIAMENTO DA INTERFACE (UI) =====
 
-// ATUALIZA TODA A TELA (SALDOS, HISTÓRICO, BALANÇO MENSAL)
 function atualizarUI() {
     if (typeof verificarTravaDiaria === 'function') verificarTravaDiaria();
     if (typeof verificarStatusPremium === 'function') verificarStatusPremium();
@@ -12,7 +11,6 @@ function atualizarUI() {
     let acumuladoReserva = 0;
     let acumuladoInvestimento = 0;
 
-    // Calcula acumulados do histórico do período
     dados.historico.forEach(item => {
         acumuladoFaturamento += (item.faturamento || 0);
         acumuladoRendaExtra += (item.rendaExtra || 0);
@@ -22,28 +20,21 @@ function atualizarUI() {
         acumuladoInvestimento += (item.investimento || 0);
     });
 
-    // Saldos das Caixas
     const totalGanhos = acumuladoFaturamento + acumuladoRendaExtra;
     const totalGastos = acumuladoGasolina + acumuladoPessoal;
     const saldoReservaFinanceira = acumuladoReserva - (dados.transferenciasReserva || 0);
     const saldoPoupanca = acumuladoInvestimento - (dados.transferenciasPoupanca || 0);
     
-    // Disponível é o saldo retido que sobrou do faturamento/gastos/reservas + os resgates efetuados
     const saldoDisponivel = (totalGanhos - totalGastos - acumuladoReserva - acumuladoInvestimento) + (dados.transferenciasReserva || 0) + (dados.transferenciasPoupanca || 0);
     const saldoTotalGeral = saldoDisponivel + saldoReservaFinanceira + saldoPoupanca;
 
-    // Atualiza Caixas no Topo
-    const elTotal = document.getElementById('saldo-total');
-    const elEmergencia = document.getElementById('saldo-fundo-emergencia');
-    const elPoupanca = document.getElementById('saldo-poupanca');
-    const elDisponivel = document.getElementById('saldo-disponivel');
+    // Atualiza Caixas
+    if (document.getElementById('saldo-total')) document.getElementById('saldo-total').innerText = formatarMoeda(saldoTotalGeral);
+    if (document.getElementById('saldo-fundo-emergencia')) document.getElementById('saldo-fundo-emergencia').innerText = formatarMoeda(saldoReservaFinanceira);
+    if (document.getElementById('saldo-poupanca')) document.getElementById('saldo-poupanca').innerText = formatarMoeda(saldoPoupanca);
+    if (document.getElementById('saldo-disponivel')) document.getElementById('saldo-disponivel').innerText = formatarMoeda(saldoDisponivel);
 
-    if (elTotal) elTotal.innerText = formatarMoeda(saldoTotalGeral);
-    if (elEmergencia) elEmergencia.innerText = formatarMoeda(saldoReservaFinanceira);
-    if (elPoupanca) elPoupanca.innerText = formatarMoeda(saldoPoupanca);
-    if (elDisponivel) elDisponivel.innerText = formatarMoeda(saldoDisponivel);
-
-    // Atualiza Tabela de Balanço Mensal
+    // Atualiza Tabela do Período
     if (document.getElementById('total-faturamento')) document.getElementById('total-faturamento').innerText = formatarMoeda(acumuladoFaturamento);
     if (document.getElementById('total-renda-extra')) document.getElementById('total-renda-extra').innerText = formatarMoeda(acumuladoRendaExtra);
     if (document.getElementById('total-gasolina')) document.getElementById('total-gasolina').innerText = formatarMoeda(acumuladoGasolina);
@@ -51,25 +42,10 @@ function atualizarUI() {
     if (document.getElementById('total-reserva-aba')) document.getElementById('total-reserva-aba').innerText = formatarMoeda(saldoReservaFinanceira);
     if (document.getElementById('total-investimento-aba')) document.getElementById('total-investimento-aba').innerText = formatarMoeda(saldoPoupanca);
 
-    // Renderiza o Último Registro se existir
-    const containerUltimo = document.getElementById('ultimo-resumo-container');
-    if (containerUltimo) {
-        if (dados.historico.length > 0) {
-            const u = dados.historico[0];
-            containerUltimo.classList.remove('hidden');
-            if (document.getElementById('last-date')) document.getElementById('last-date').innerText = u.data;
-            if (document.getElementById('last-ganho')) document.getElementById('last-ganho').innerText = formatarMoeda((u.faturamento || 0) + (u.rendaExtra || 0));
-            if (document.getElementById('last-gastos')) document.getElementById('last-gastos').innerText = formatarMoeda((u.gasolina || 0) + (u.pessoal || 0));
-            if (document.getElementById('last-reserva')) document.getElementById('last-reserva').innerText = formatarMoeda((u.faturamento || 0) + (u.rendaExtra || 0) - (u.gasolina || 0) - (u.pessoal || 0));
-        } else {
-            containerUltimo.classList.add('hidden');
-        }
-    }
-
     renderizarHistorico();
+    renderizarMesesArquivados();
 }
 
-// RENDERIZA LISTA DO HISTÓRICO
 function renderizarHistorico() {
     const tbody = document.getElementById('historico-body');
     if (!tbody) return;
@@ -95,7 +71,30 @@ function renderizarHistorico() {
     });
 }
 
-// RENDERIZA A LISTA NA PLANILHA DE GASTOS
+function renderizarMesesArquivados() {
+    const container = document.getElementById('meses-arquivados-container');
+    if (!container) return;
+    container.innerHTML = '';
+
+    if (!dados.mesesAnteriores || dados.mesesAnteriores.length === 0) {
+        container.innerHTML = `<p class="text-xs text-gray-500 italic p-2">Nenhum mês arquivado ainda.</p>`;
+        return;
+    }
+
+    dados.mesesAnteriores.forEach(m => {
+        const div = document.createElement('div');
+        div.className = "p-3 bg-gray-900 border border-gray-800 rounded-xl flex justify-between items-center mb-2";
+        div.innerHTML = `
+            <div>
+                <span class="block text-xs font-bold text-gray-200 capitalize">${m.mes}</span>
+                <span class="text-[10px] text-gray-400">Lucro: ${formatarMoeda(m.saldo)}</span>
+            </div>
+            <span class="text-xs font-bold ${m.saldo >= 0 ? 'text-green-400' : 'text-red-400'}">${formatarMoeda(m.saldo)}</span>
+        `;
+        container.appendChild(div);
+    });
+}
+
 function renderizarListaGastos() {
     const tbody = document.getElementById('lista-gastos-correntes-body');
     const totalEl = document.getElementById('subjanela-total-acumulado');
@@ -109,10 +108,10 @@ function renderizarListaGastos() {
         const tr = document.createElement('tr');
         tr.className = "border-b border-gray-800";
         tr.innerHTML = `
-            <td class="p-2 text-gray-300">${item.desc}</td>
-            <td class="p-2 font-bold text-red-400">${formatarMoeda(item.val)}</td>
+            <td class="p-2 text-gray-300 text-xs">${item.desc}</td>
+            <td class="p-2 font-bold text-red-400 text-xs">${formatarMoeda(item.val)}</td>
             <td class="p-2 text-right">
-                <button type="button" onclick="removerItemGasto(${idx})" class="text-red-500 font-bold">✕</button>
+                <button type="button" onclick="removerItemGasto(${idx})" class="text-red-500 font-bold text-xs">✕</button>
             </td>
         `;
         tbody.appendChild(tr);
@@ -121,7 +120,7 @@ function renderizarListaGastos() {
     if (totalEl) totalEl.innerText = formatarMoeda(total);
 }
 
-// EDIÇÃO DE LANÇAMENTO
+// MODAL DE EDIÇÃO DE LANÇAMENTO
 function abrirModalEdicao(index) {
     lancamentoEmEdicao = index;
     const item = dados.historico[index];
@@ -136,6 +135,7 @@ function abrirModalEdicao(index) {
     if (document.getElementById('edit-reserva-financeira')) document.getElementById('edit-reserva-financeira').value = item.reservaFinanceira || 0;
     if (document.getElementById('edit-investimento')) document.getElementById('edit-investimento').value = item.investimento || 0;
 
+    // Carrega a lista de gastos daquele dia específico para ajuste
     itensGastosTemporarios = item.detalhesGastos ? [...item.detalhesGastos] : [];
     modal.classList.add('active');
 }
@@ -157,6 +157,8 @@ function salvarEdicao() {
     item.pessoal = parseFloat(document.getElementById('edit-pessoal').value) || 0;
     item.reservaFinanceira = parseFloat(document.getElementById('edit-reserva-financeira').value) || 0;
     item.investimento = parseFloat(document.getElementById('edit-investimento').value) || 0;
+    
+    // Salva a lista de gastos atualizada após apagar/adicionar itens
     item.detalhesGastos = [...itensGastosTemporarios];
 
     salvarDados();
@@ -174,9 +176,10 @@ function deletarLancamento() {
     }
 }
 
-// EXPOSITORES PARA O ESCOPO GLOBAL
+// EXPOSITORES GLOBAIS
 window.atualizarUI = atualizarUI;
 window.renderizarHistorico = renderizarHistorico;
+window.renderizarMesesArquivados = renderizarMesesArquivados;
 window.renderizarListaGastos = renderizarListaGastos;
 window.abrirModalEdicao = abrirModalEdicao;
 window.fecharModal = fecharModal;

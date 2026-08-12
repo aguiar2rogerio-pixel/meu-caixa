@@ -18,6 +18,7 @@ function limparDados() {
         dados = { saldoAcumulado: 0, historico: [], mesesAnteriores: [], transferenciasReserva: 0, transferenciasPoupanca: 0 };
         salvarDados();
         localStorage.removeItem('rascunho_gastos_dia');
+        localStorage.removeItem('rascunho_campos_dia');
         itensGastosTemporarios = [];
         atualizarUI();
     }
@@ -29,7 +30,9 @@ function exportarBackup() {
     const dl = document.createElement('a');
     dl.setAttribute("href", dataStr);
     dl.setAttribute("download", `backup_meucaixa_${new Date().toISOString().slice(0,10)}.txt`);
-    document.body.appendChild(dl); dl.click(); dl.remove();
+    document.body.appendChild(dl); 
+    dl.click(); 
+    dl.remove();
 }
 
 // IMPORTAR BACKUP
@@ -47,8 +50,17 @@ function importarBackup(event) {
             } else {
                 alert('Arquivo de backup inválido.');
             }
-        } catch (e) { alert('Erro ao ler o arquivo de backup.'); }
+        } catch (e) { 
+            alert('Erro ao ler o arquivo de backup.'); 
+        }
         input.value = '';
     };
     if (input.files.length > 0) reader.readAsText(input.files[0]);
 }
+
+// EXPOSITORES GLOBAIS
+window.salvarDados = salvarDados;
+window.salvarRascunhoGastos = salvarRascunhoGastos;
+window.limparDados = limparDados;
+window.exportarBackup = exportarBackup;
+window.importarBackup = importarBackup;

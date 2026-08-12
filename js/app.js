@@ -83,7 +83,7 @@ function salvarRascunhoCampos() {
 
 function carregarRascunhoCampos() {
     const rascunho = JSON.parse(localStorage.getItem('rascunho_campos_dia'));
-    if (rascunho) {
+    if (rascunho && lancamentoEmEdicao === null) {
         if (document.getElementById('faturamento')) document.getElementById('faturamento').value = rascunho.faturamento || '';
         if (document.getElementById('renda-extra')) document.getElementById('renda-extra').value = rascunho.rendaExtra || '';
         if (document.getElementById('gasolina')) document.getElementById('gasolina').value = rascunho.gasolina || '';
@@ -180,7 +180,11 @@ function adicionarItemNaLista() {
     }
 
     itensGastosTemporarios.push({ desc, val });
-    localStorage.setItem('rascunho_gastos_dia', JSON.stringify(itensGastosTemporarios));
+
+    // Salva rascunho apenas se for um lançamento novo na tela principal
+    if (lancamentoEmEdicao === null) {
+        localStorage.setItem('rascunho_gastos_dia', JSON.stringify(itensGastosTemporarios));
+    }
 
     if (descEl) descEl.value = '';
     if (valEl) valEl.value = '';
@@ -190,65 +194,79 @@ function adicionarItemNaLista() {
 
 function removerItemGasto(index) {
     itensGastosTemporarios.splice(index, 1);
-    localStorage.setItem('rascunho_gastos_dia', JSON.stringify(itensGastosTemporarios));
+    
+    if (lancamentoEmEdicao === null) {
+        localStorage.setItem('rascunho_gastos_dia', JSON.stringify(itensGastosTemporarios));
+    }
+
     if (typeof renderizarListaGastos === 'function') renderizarListaGastos();
 }
 
 function confirmarSubjanelaGastos() {
     const total = itensGastosTemporarios.reduce((acc, curr) => acc + curr.val, 0);
-    const campoPessoal = document.getElementById('pessoal');
-    if (campoPessoal) campoPessoal.value = formatarMoeda(total);
-    fecharSubjanelaGastos();
-    salvarRascunhoCampos();
-}
-
-// TRANSFERÊNCIAS (RESGATE)
-function abrirModalTransferencia(origem) {
-    origemTransferenciaAtual = origem;
-    const modal = document.getElementById('modal-transferencia');
-    const titulo = document.getElementById('transf-titulo');
-    const instrucao = document.getElementById('transf-instrucao');
-    const valorInput = document.getElementById('transf-valor');
-
-    if (valorInput) valorInput.value = '';
-
-    if (origem === 'emergencia') {
-        if (titulo) titulo.innerText = "Resgatar Fundo Emergência";
-        if (instrucao) instrucao.innerText = "Informe quanto deseja retirar do Fundo de Emergência para transferir de volta ao Caixa Disponível.";
+    
+    // Se estiver ajustando um lançamento existente
+    if (lancamentoEmEdicao !== null) {
+        const campoPessoalEdit = document.getElementById('edit-pessoal');
+        if (campoPessoalEdit) campoPessoalEdit.value = total;
     } else {
-        if (titulo) titulo.innerText = "Resgatar Poupança";
-        if (instrucao) instrucao.innerText = "Informe quanto deseja retirar da Poupança para transferir de volta ao Caixa Disponível.";
+        // Se for na tela principal
+        const campoPessoal = document.getElementById('pessoal');
+        if (campoPessoal) campoPessoal.value = formatarMoeda(total);
+        salvarRascunhoCampos();
     }
-
-    if (modal) modal.classList.add('active');
+    
+    fecharSubjanelaGastos();
 }
 
-function fecharModalTransferencia() {
-    const modal = document.getElementById('modal-transferencia');
-    if (modal) modal.classList.remove('active');
-    origemTransferenciaAtual = null;
-}
-
-function confirmarTransferencia() {
-    const valor = parseFloat(document.getElementById('transf-valor').value) || 0;
-    if (valor <= 0) {
-        alert("Por favor, digite um valor válido.");
+// FECHAMENTO MENSAL
+function fecharBalançoMensal() {
+    if (dados.historico.length === 0) {
+        alert("Não existem lançamentos no histórico para fechar o mês.");
         return;
     }
 
-    if (origemTransferenciaAtual === 'emergencia') {
-        dados.transferenciasReserva += valor;
-    } else if (origemTransferenciaAtual === 'poupanca') {
-        dados.transferenciasPoupanca += valor;
+    if (confirm("Deseja fechar o balanço do mês atual e arquivá-lo? O histórico de dias será resetado para o novo mês.")) {
+        let faturamentoTotal = 0;
+        let rendaExtraTotal = 0;
+        let gasolinaTotal = 0;
+        let pessoalTotal = 0;
+        let reservaTotal = 0;
+        let investimentoTotal = 0;
+
+        dados.historico.forEach(item => {
+            faturamentoTotal += item.faturamento || 0;
+            rendaExtraTotal += item.rendaExtra || 0;
+            gasolinaTotal += item.gasolina || 0;
+            pessoalTotal += item.pessoal || 0;
+            reservaTotal += item.reservaFinanceira || 0;
+            investimentoTotal += item.investimento || 0;
+        });
+
+        const mesAtual = new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+
+        dados.mesesAnteriores.unshift({
+            mes: mesAtual,
+            faturamento: faturamentoTotal,
+            rendaExtra: rendaExtraTotal,
+            gasolina: gasolinaTotal,
+            pessoal: pessoalTotal,
+            reserva: reservaTotal,
+            investimento: investimentoTotal,
+            saldo: (faturamentoTotal + rendaExtraTotal) - (gasolinaTotal + pessoalTotal)
+        });
+
+        // Apaga o histórico diário do mês anterior para iniciar o novo
+        dados.historico = [];
+
+        if (typeof salvarDados === 'function') salvarDados();
+        if (typeof atualizarUI === 'function') atualizarUI();
+
+        alert(`✅ Balanço de ${mesAtual} arquivado com sucesso!`);
     }
-
-    if (typeof salvarDados === 'function') salvarDados();
-    if (typeof atualizarUI === 'function') atualizarUI();
-
-    fecharModalTransferencia();
 }
 
-// EXPOSITORES PARA ESCOPO GLOBAL (Para acionamento dos onclick do HTML)
+// EXPOSITORES PARA ESCOPO GLOBAL
 window.formatarMoeda = formatarMoeda;
 window.obterDataHoje = obterDataHoje;
 window.verificarTravaDiaria = verificarTravaDiaria;
@@ -262,6 +280,4 @@ window.fecharSubjanelaGastos = fecharSubjanelaGastos;
 window.adicionarItemNaLista = adicionarItemNaLista;
 window.removerItemGasto = removerItemGasto;
 window.confirmarSubjanelaGastos = confirmarSubjanelaGastos;
-window.abrirModalTransferencia = abrirModalTransferencia;
-window.fecharModalTransferencia = fecharModalTransferencia;
-window.confirmarTransferencia = confirmarTransferencia;
+window.fecharBalançoMensal = fecharBalançoMensal;

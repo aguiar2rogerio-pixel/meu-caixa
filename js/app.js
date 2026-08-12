@@ -68,7 +68,7 @@ function verificarTravaDiaria() {
     }
 }
 
-// RASCUNHO DOS CAMPOS — SALVA DIGITAÇÃO
+// RASCUNHO DOS CAMPOS
 function salvarRascunhoCampos() {
     if (lancamentoEmEdicao !== null) return;
     const rascunho = {
@@ -92,7 +92,7 @@ function carregarRascunhoCampos() {
     }
 }
 
-// MODAL SALVAMENTO DO DIA
+// MODAL CONFIRMAR SALVAMENTO
 function solicitarConfirmacaoSalvamento() {
     const faturamento = parseFloat(document.getElementById('faturamento').value) || 0;
     const rendaExtra = parseFloat(document.getElementById('renda-extra').value) || 0;
@@ -107,12 +107,12 @@ function solicitarConfirmacaoSalvamento() {
     }
 
     const modal = document.getElementById('modal-confirmar-dia');
-    if (modal) modal.classList.add('active');
+    if (modal) modal.classList.remove('hidden');
 }
 
 function fecharModalConfirmacaoDia() {
     const modal = document.getElementById('modal-confirmar-dia');
-    if (modal) modal.classList.remove('active');
+    if (modal) modal.classList.add('hidden');
 }
 
 function executarSalvarLancamento() {
@@ -138,12 +138,10 @@ function executarSalvarLancamento() {
 
     dados.historico.unshift(novoLancamento);
     
-    // Limpa rascunhos do dia
     itensGastosTemporarios = [];
     localStorage.removeItem('rascunho_gastos_dia');
     localStorage.removeItem('rascunho_campos_dia');
 
-    // Limpa campos da tela
     ['faturamento', 'renda-extra', 'gasolina', 'reserva-financeira', 'investimento', 'pessoal'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
@@ -158,13 +156,13 @@ function executarSalvarLancamento() {
 // PLANILHA DE GASTOS
 function abrirSubjanelaGastos() {
     const modal = document.getElementById('subjanela-gastos');
-    if (modal) modal.classList.add('active');
+    if (modal) modal.classList.remove('hidden');
     if (typeof renderizarListaGastos === 'function') renderizarListaGastos();
 }
 
 function fecharSubjanelaGastos() {
     const modal = document.getElementById('subjanela-gastos');
-    if (modal) modal.classList.remove('active');
+    if (modal) modal.classList.add('hidden');
 }
 
 function adicionarItemNaLista() {
@@ -216,7 +214,7 @@ function confirmarSubjanelaGastos() {
     fecharSubjanelaGastos();
 }
 
-// RESGATES DA POUPANÇA E RESERVA (MODAL)
+// MODAL RESGATE (FUNDO / POUPANÇA)
 function abrirModalTransferencia(origem) {
     origemTransferenciaAtual = origem;
     const modal = document.getElementById('modal-transferencia');
@@ -234,12 +232,12 @@ function abrirModalTransferencia(origem) {
         if (instrucao) instrucao.innerText = "Informe quanto deseja retirar da Poupança para transferir de volta ao Caixa Disponível.";
     }
 
-    if (modal) modal.classList.add('active');
+    if (modal) modal.classList.remove('hidden');
 }
 
 function fecharModalTransferencia() {
     const modal = document.getElementById('modal-transferencia');
-    if (modal) modal.classList.remove('active');
+    if (modal) modal.classList.add('hidden');
     origemTransferenciaAtual = null;
 }
 
@@ -303,7 +301,6 @@ function fecharBalançoMensal() {
             saldo: (faturamentoTotal + rendaExtraTotal) - (gasolinaTotal + pessoalTotal)
         });
 
-        // Limpa lançamentos diários para iniciar o novo mês
         dados.historico = [];
 
         if (typeof salvarDados === 'function') salvarDados();

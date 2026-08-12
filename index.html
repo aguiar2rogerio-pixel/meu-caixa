@@ -6,12 +6,6 @@
     <title>Meu Caixa — Controle Financeiro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .modal {
-            display: none;
-        }
-        .modal.active {
-            display: flex;
-        }
         .input-autonomo {
             background-color: #111827;
             border: 1px solid #374151;
@@ -72,21 +66,20 @@
                 <div class="bg-gray-950 p-3 rounded-xl border border-gray-800">
                     <div class="flex justify-between items-center">
                         <span class="text-[10px] text-gray-400 block uppercase font-bold">Fundo Emergência</span>
-                        <button onclick="abrirModalTransferencia('emergencia')" class="text-[10px] bg-gray-800 text-blue-400 px-1.5 py-0.5 rounded border border-gray-700 hover:bg-gray-700">Resgatar</button>
+                        <button type="button" onclick="abrirModalTransferencia('emergencia')" class="text-[10px] bg-gray-800 text-blue-400 px-1.5 py-0.5 rounded border border-gray-700 hover:bg-gray-700">Resgatar</button>
                     </div>
                     <span id="saldo-fundo-emergencia" class="text-sm font-bold text-blue-400">R$ 0,00</span>
                 </div>
                 <div class="bg-gray-950 p-3 rounded-xl border border-gray-800">
                     <div class="flex justify-between items-center">
                         <span class="text-[10px] text-gray-400 block uppercase font-bold">Poupança</span>
-                        <button onclick="abrirModalTransferencia('poupanca')" class="text-[10px] bg-gray-800 text-purple-400 px-1.5 py-0.5 rounded border border-gray-700 hover:bg-gray-700">Resgatar</button>
+                        <button type="button" onclick="abrirModalTransferencia('poupanca')" class="text-[10px] bg-gray-800 text-purple-400 px-1.5 py-0.5 rounded border border-gray-700 hover:bg-gray-700">Resgatar</button>
                     </div>
                     <span id="saldo-poupanca" class="text-sm font-bold text-purple-400">R$ 0,00</span>
                 </div>
             </div>
 
-            <!-- BOTÃO DE FECHAMENTO MENSAL CORRIGIDO -->
-            <button onclick="fecharBalançoMensal()" class="w-full bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-3.5 rounded-xl text-sm uppercase tracking-wider shadow-md">
+            <button type="button" onclick="fecharBalançoMensal()" class="w-full bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-3.5 rounded-xl text-sm uppercase tracking-wider shadow-md">
                 📅 Fechar Balanço Mensal
             </button>
         </div>
@@ -158,18 +151,18 @@
 
         <!-- BACKUP -->
         <div class="flex gap-3">
-            <button onclick="salvarBackup()" class="w-1/2 bg-gray-900 hover:bg-gray-800 border border-gray-800 text-gray-300 font-bold py-3 rounded-xl text-xs">📦 Salvar Backup</button>
-            <button onclick="lerBackupModal()" class="w-1/2 bg-gray-900 hover:bg-gray-800 border border-gray-800 text-gray-300 font-bold py-3 rounded-xl text-xs">📂 Ler Backup</button>
+            <button type="button" onclick="salvarBackup()" class="w-1/2 bg-gray-900 hover:bg-gray-800 border border-gray-800 text-gray-300 font-bold py-3 rounded-xl text-xs">📦 Salvar Backup</button>
+            <button type="button" onclick="lerBackupModal()" class="w-1/2 bg-gray-900 hover:bg-gray-800 border border-gray-800 text-gray-300 font-bold py-3 rounded-xl text-xs">📂 Ler Backup</button>
         </div>
 
     </div>
 
     <!-- MODAL PLANILHA DE GASTOS DO DIA -->
-    <div id="subjanela-gastos" class="modal fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+    <div id="subjanela-gastos" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
         <div class="bg-gray-900 border border-gray-800 rounded-2xl w-full max-w-sm p-5 space-y-4 shadow-2xl">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
                 <h3 class="text-xs uppercase tracking-wider text-red-400 font-bold">Planilha de Gastos do Dia</h3>
-                <button onclick="fecharSubjanelaGastos()" class="text-gray-400 hover:text-white font-bold text-lg">✕</button>
+                <button type="button" onclick="fecharSubjanelaGastos()" class="text-gray-400 hover:text-white font-bold text-lg">✕</button>
             </div>
 
             <div class="flex gap-2 items-end">
@@ -181,7 +174,7 @@
                     <label class="block text-[10px] text-gray-400 mb-1 font-bold">Valor (R$)</label>
                     <input type="number" id="gasto-item-val" step="0.01" class="input-autonomo text-xs" placeholder="0.00">
                 </div>
-                <button onclick="adicionarItemNaLista()" class="bg-red-600 hover:bg-red-500 text-white font-bold px-3 py-2.5 rounded-xl text-sm">+</button>
+                <button type="button" onclick="adicionarItemNaLista()" class="bg-red-600 hover:bg-red-500 text-white font-bold px-3 py-2.5 rounded-xl text-sm">+</button>
             </div>
 
             <div class="max-h-40 overflow-y-auto border border-gray-800 rounded-xl">
@@ -195,28 +188,28 @@
                 <span id="subjanela-total-acumulado" class="text-sm font-bold text-red-400">R$ 0,00</span>
             </div>
 
-            <button onclick="confirmarSubjanelaGastos()" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-wider">Confirmar e Enviar</button>
+            <button type="button" onclick="confirmarSubjanelaGastos()" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-wider">Confirmar e Enviar</button>
         </div>
     </div>
 
     <!-- MODAL CONFIRMAR SALVAMENTO DO DIA -->
-    <div id="modal-confirmar-dia" class="modal fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+    <div id="modal-confirmar-dia" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
         <div class="bg-gray-900 border border-gray-800 rounded-2xl w-full max-w-sm p-5 space-y-4 shadow-2xl text-center">
             <h3 class="text-sm uppercase tracking-wider text-blue-400 font-bold">Fechar o Dia?</h3>
             <p class="text-xs text-gray-400">Depois de salvo, os dados de hoje serão computados e o dia será bloqueado para novos lançamentos diretos.</p>
             <div class="flex gap-2 pt-2">
-                <button onclick="fecharModalConfirmacaoDia()" class="w-1/2 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-3 rounded-xl text-xs">Voltar</button>
-                <button onclick="executarSalvarLancamento()" class="w-1/2 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl text-xs">Sim, Salvar</button>
+                <button type="button" onclick="fecharModalConfirmacaoDia()" class="w-1/2 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-3 rounded-xl text-xs">Voltar</button>
+                <button type="button" onclick="executarSalvarLancamento()" class="w-1/2 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl text-xs">Sim, Salvar</button>
             </div>
         </div>
     </div>
 
     <!-- MODAL EDIÇÃO / AJUSTAR -->
-    <div id="modal-edicao" class="modal fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+    <div id="modal-edicao" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
         <div class="bg-gray-900 border border-gray-800 rounded-2xl w-full max-w-sm p-5 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
                 <h3 class="text-xs uppercase tracking-wider text-blue-400 font-bold">Ajustar Lançamento</h3>
-                <button onclick="deletarLancamento()" class="text-red-500 font-bold text-sm">🗑️</button>
+                <button type="button" onclick="deletarLancamento()" class="text-red-500 font-bold text-sm">🗑️</button>
             </div>
 
             <div class="space-y-3">
@@ -254,14 +247,14 @@
             </div>
 
             <div class="flex gap-2 pt-2">
-                <button onclick="fecharModal()" class="w-1/2 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-3 rounded-xl text-xs">Voltar</button>
-                <button onclick="salvarEdicao()" class="w-1/2 bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-xl text-xs">Salvar</button>
+                <button type="button" onclick="fecharModal()" class="w-1/2 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-3 rounded-xl text-xs">Voltar</button>
+                <button type="button" onclick="salvarEdicao()" class="w-1/2 bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-xl text-xs">Salvar</button>
             </div>
         </div>
     </div>
 
     <!-- MODAL RESGATE (FUNDO / POUPANÇA) -->
-    <div id="modal-transferencia" class="modal fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+    <div id="modal-transferencia" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
         <div class="bg-gray-900 border border-gray-800 rounded-2xl w-full max-w-sm p-5 space-y-4 shadow-2xl">
             <h3 id="transf-titulo" class="text-xs uppercase tracking-wider text-blue-400 font-bold">Resgatar Valor</h3>
             <p id="transf-instrucao" class="text-xs text-gray-400">Informe quanto deseja retirar para transferir de volta ao Caixa Disponível.</p>
@@ -272,8 +265,8 @@
             </div>
 
             <div class="flex gap-2 pt-2">
-                <button onclick="fecharModalTransferencia()" class="w-1/2 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-3 rounded-xl text-xs">Cancelar</button>
-                <button onclick="confirmarTransferencia()" class="w-1/2 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl text-xs">Confirmar</button>
+                <button type="button" onclick="fecharModalTransferencia()" class="w-1/2 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-3 rounded-xl text-xs">Cancelar</button>
+                <button type="button" onclick="confirmarTransferencia()" class="w-1/2 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl text-xs">Confirmar</button>
             </div>
         </div>
     </div>

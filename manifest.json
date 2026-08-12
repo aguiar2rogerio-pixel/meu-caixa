@@ -1,20 +1,28 @@
 {
-  "name": "Meu Caixa",
+  "name": "Meu Caixa — Conta de Motorista",
   "short_name": "Meu Caixa",
+  "description": "Controle de ganhos, despesas e corridas para motoristas de aplicativo",
+  "lang": "pt-BR",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
+  "orientation": "portrait-primary",
   "background_color": "#111111",
   "theme_color": "#111111",
   "icons": [
     {
       "src": "icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
-  ]
+  ],
+  "categories": ["finance", "productivity", "utilities"],
+  "screenshots": []
 }

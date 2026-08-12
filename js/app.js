@@ -195,11 +195,19 @@ function removerItemGasto(index) {
 }
 
 function confirmarSubjanelaGastos() {
-    const total = itensGastosTemporarios.reduce((acc, curr) => acc + curr.val, 0);
-    const campoPessoal = document.getElementById('pessoal');
-    if (campoPessoal) campoPessoal.value = formatarMoeda(total);
+    const total = itensGastosTemporarios.reduce((acc, curr) => acc + (Number(curr.val) || 0), 0);
+    const idCampo = lancamentoEmEdicao !== null ? 'edit-pessoal' : 'pessoal';
+    const campoPessoal = document.getElementById(idCampo);
+
+    if (campoPessoal) {
+        // O campo de edição é numérico; o campo principal é apenas informativo.
+        campoPessoal.value = lancamentoEmEdicao !== null ? total : formatarMoeda(total);
+    }
+
     fecharSubjanelaGastos();
-    salvarRascunhoCampos();
+
+    // Durante uma edição, não sobrescreva o rascunho do lançamento novo.
+    if (lancamentoEmEdicao === null) salvarRascunhoCampos();
 }
 
 // TRANSFERÊNCIAS (RESGATE)

@@ -1,36 +1,64 @@
 // ===== MEU CAIXA — GERENCIAMENTO DA INTERFACE (UI) =====
 
+function resumirLancamentos(lista) {
+    return (lista || []).reduce((acc, item) => {
+        acc.faturamento += Number(item.faturamento) || 0;
+        acc.rendaExtra += Number(item.rendaExtra) || 0;
+        acc.gasolina += Number(item.gasolina) || 0;
+        acc.pessoal += Number(item.pessoal) || 0;
+        acc.reservaFinanceira += Number(item.reservaFinanceira) || 0;
+        acc.investimento += Number(item.investimento) || 0;
+        return acc;
+    }, { faturamento: 0, rendaExtra: 0, gasolina: 0, pessoal: 0, reservaFinanceira: 0, investimento: 0 });
+}
+
+function somarResumos(a, b) {
+    return {
+        faturamento: a.faturamento + b.faturamento,
+        rendaExtra: a.rendaExtra + b.rendaExtra,
+        gasolina: a.gasolina + b.gasolina,
+        pessoal: a.pessoal + b.pessoal,
+        reservaFinanceira: a.reservaFinanceira + b.reservaFinanceira,
+        investimento: a.investimento + b.investimento
+    };
+}
+
+function resumoArquivos() {
+    return (dados.mesesAnteriores || []).reduce((acc, mes) => {
+        const resumo = mes.resumo || resumirLancamentos(mes.historico || []);
+        return somarResumos(acc, {
+            faturamento: Number(resumo.faturamento) || 0,
+            rendaExtra: Number(resumo.rendaExtra) || 0,
+            gasolina: Number(resumo.gasolina) || 0,
+            pessoal: Number(resumo.pessoal) || 0,
+            reservaFinanceira: Number(resumo.reservaFinanceira) || 0,
+            investimento: Number(resumo.investimento) || 0
+        });
+    }, { faturamento: 0, rendaExtra: 0, gasolina: 0, pessoal: 0, reservaFinanceira: 0, investimento: 0 });
+}
+
 // ATUALIZA TODA A TELA (SALDOS, HISTÓRICO, BALANÇO MENSAL)
 function atualizarUI() {
     if (typeof verificarTravaDiaria === 'function') verificarTravaDiaria();
     if (typeof verificarStatusPremium === 'function') verificarStatusPremium();
 
-    let acumuladoFaturamento = 0;
-    let acumuladoRendaExtra = 0;
-    let acumuladoGasolina = 0;
-    let acumuladoPessoal = 0;
-    let acumuladoReserva = 0;
-    let acumuladoInvestimento = 0;
+    const resumoAtual = resumirLancamentos(dados.historico);
+    const resumoGeral = somarResumos(resumoAtual, resumoArquivos());
 
-    // Calcula acumulados do histórico do período
-    dados.historico.forEach(item => {
-        acumuladoFaturamento += (item.faturamento || 0);
-        acumuladoRendaExtra += (item.rendaExtra || 0);
-        acumuladoGasolina += (item.gasolina || 0);
-        acumuladoPessoal += (item.pessoal || 0);
-        acumuladoReserva += (item.reservaFinanceira || 0);
-        acumuladoInvestimento += (item.investimento || 0);
-    });
-
-    // Saldos das Caixas
-    const totalGanhos = acumuladoFaturamento + acumuladoRendaExtra;
-    const totalGastos = acumuladoGasolina + acumuladoPessoal;
-    const saldoReservaFinanceira = acumuladoReserva - (dados.transferenciasReserva || 0);
-    const saldoPoupanca = acumuladoInvestimento - (dados.transferenciasPoupanca || 0);
-    
-    // Disponível é o saldo retido que sobrou do faturamento/gastos/reservas + os resgates efetuados
-    const saldoDisponivel = (totalGanhos - totalGastos - acumuladoReserva - acumuladoInvestimento) + (dados.transferenciasReserva || 0) + (dados.transferenciasPoupanca || 0);
+    // Saldos das Caixas consideram o período atual e os meses arquivados.
+    const totalGanhos = resumoGeral.faturamento + resumoGeral.rendaExtra;
+    const totalGastos = resumoGeral.gasolina + resumoGeral.pessoal;
+    const saldoReservaFinanceira = resumoGeral.reservaFinanceira - (dados.transferenciasReserva || 0);
+    const saldoPoupanca = resumoGeral.investimento - (dados.transferenciasPoupanca || 0);
+    const saldoDisponivel = (totalGanhos - totalGastos - resumoGeral.reservaFinanceira - resumoGeral.investimento) + (dados.transferenciasReserva || 0) + (dados.transferenciasPoupanca || 0);
     const saldoTotalGeral = saldoDisponivel + saldoReservaFinanceira + saldoPoupanca;
+
+    const acumuladoFaturamento = resumoAtual.faturamento;
+    const acumuladoRendaExtra = resumoAtual.rendaExtra;
+    const acumuladoGasolina = resumoAtual.gasolina;
+    const acumuladoPessoal = resumoAtual.pessoal;
+    const acumuladoReserva = resumoAtual.reservaFinanceira;
+    const acumuladoInvestimento = resumoAtual.investimento;
 
     // Atualiza Caixas no Topo
     const elTotal = document.getElementById('saldo-total');
@@ -67,6 +95,7 @@ function atualizarUI() {
     }
 
     renderizarHistorico();
+    renderizarMesesAnteriores();
 }
 
 // RENDERIZA LISTA DO HISTÓRICO
@@ -136,7 +165,9 @@ function abrirModalEdicao(index) {
     if (document.getElementById('edit-reserva-financeira')) document.getElementById('edit-reserva-financeira').value = item.reservaFinanceira || 0;
     if (document.getElementById('edit-investimento')) document.getElementById('edit-investimento').value = item.investimento || 0;
 
-    itensGastosTemporarios = item.detalhesGastos ? [...item.detalhesGastos] : [];
+    itensGastosTemporarios = Array.isArray(item.detalhesGastos)
+        ? item.detalhesGastos.map(gasto => ({ desc: gasto.desc || 'Gasto sem nome', val: Number(gasto.val) || 0 }))
+        : ((Number(item.pessoal) || 0) > 0 ? [{ desc: 'Gastos do Dia', val: Number(item.pessoal) }] : []);
     modal.classList.add('active');
 }
 
@@ -151,10 +182,11 @@ function salvarEdicao() {
     if (lancamentoEmEdicao === null) return;
 
     const item = dados.historico[lancamentoEmEdicao];
+    if (!item) return;
     item.faturamento = parseFloat(document.getElementById('edit-faturamento').value) || 0;
     item.rendaExtra = parseFloat(document.getElementById('edit-renda-extra').value) || 0;
     item.gasolina = parseFloat(document.getElementById('edit-gasolina').value) || 0;
-    item.pessoal = parseFloat(document.getElementById('edit-pessoal').value) || 0;
+    item.pessoal = itensGastosTemporarios.reduce((acc, gasto) => acc + (Number(gasto.val) || 0), 0);
     item.reservaFinanceira = parseFloat(document.getElementById('edit-reserva-financeira').value) || 0;
     item.investimento = parseFloat(document.getElementById('edit-investimento').value) || 0;
     item.detalhesGastos = [...itensGastosTemporarios];
@@ -174,6 +206,57 @@ function deletarLancamento() {
     }
 }
 
+function abrirFecharMes() {
+    const modal = document.getElementById('modal-fechar-mes');
+    if (!dados.historico.length) {
+        alert('Não há lançamentos no período atual para arquivar.');
+        return;
+    }
+    if (modal) modal.classList.add('active');
+}
+
+function fecharModalMes() {
+    const modal = document.getElementById('modal-fechar-mes');
+    if (modal) modal.classList.remove('active');
+}
+
+function confirmarFecharMes() {
+    if (!dados.historico.length) {
+        fecharModalMes();
+        alert('Não há lançamentos no período atual para arquivar.');
+        return;
+    }
+
+    const resumo = resumirLancamentos(dados.historico);
+    const periodo = new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric', timeZone: 'America/Sao_Paulo' });
+    dados.mesesAnteriores = Array.isArray(dados.mesesAnteriores) ? dados.mesesAnteriores : [];
+    dados.mesesAnteriores.unshift({ id: Date.now(), periodo, resumo, historico: [...dados.historico] });
+    dados.historico = [];
+    itensGastosTemporarios = [];
+    localStorage.removeItem('rascunho_gastos_dia');
+    localStorage.removeItem('rascunho_campos_dia');
+    salvarDados();
+    fecharModalMes();
+    atualizarUI();
+}
+
+function renderizarMesesAnteriores() {
+    const container = document.getElementById('meses-anteriores-container');
+    const vazio = document.getElementById('meses-vazios');
+    if (!container) return;
+    container.innerHTML = '';
+    const meses = Array.isArray(dados.mesesAnteriores) ? dados.mesesAnteriores : [];
+    if (vazio) vazio.classList.toggle('hidden', meses.length > 0);
+    meses.forEach(mes => {
+        const resumo = mes.resumo || resumirLancamentos(mes.historico || []);
+        const saldo = (resumo.faturamento || 0) + (resumo.rendaExtra || 0) - (resumo.gasolina || 0) - (resumo.pessoal || 0);
+        const bloco = document.createElement('div');
+        bloco.className = 'bg-gray-900 border border-gray-800 rounded-xl p-3 flex justify-between items-center text-xs';
+        bloco.innerHTML = `<div><div class="font-bold text-yellow-500 uppercase">${mes.periodo || 'Mês arquivado'}</div><div class="text-gray-400">${(mes.historico || []).length} lançamento(s)</div></div><strong class="${saldo >= 0 ? 'text-green-400' : 'text-red-400'}">${formatarMoeda(saldo)}</strong>`;
+        container.appendChild(bloco);
+    });
+}
+
 // EXPOSITORES PARA O ESCOPO GLOBAL
 window.atualizarUI = atualizarUI;
 window.renderizarHistorico = renderizarHistorico;
@@ -182,3 +265,7 @@ window.abrirModalEdicao = abrirModalEdicao;
 window.fecharModal = fecharModal;
 window.salvarEdicao = salvarEdicao;
 window.deletarLancamento = deletarLancamento;
+window.abrirFecharMes = abrirFecharMes;
+window.fecharModalMes = fecharModalMes;
+window.confirmarFecharMes = confirmarFecharMes;
+window.renderizarMesesAnteriores = renderizarMesesAnteriores;

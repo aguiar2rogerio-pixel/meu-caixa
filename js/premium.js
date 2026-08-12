@@ -1,26 +1,27 @@
 // ===== MEU CAIXA — SISTEMA PREMIUM =====
 
-const LIMITE_GRATUITO = 30; // 30 lançamentos/mês no plano gratuito
+const LIMITE_GRATUITO = 30;
 
-// VERIFICAR SE É USUÁRIO PREMIUM
 function isUsuarioPremium() {
     return localStorage.getItem('meuCaixa_premium') === 'true';
 }
 
-// CONTAR LANÇAMENTOS DO MÊS ATUAL
 function getContagemMesAtual() {
     const agora = new Date();
     const mes = agora.getMonth();
     const ano = agora.getFullYear();
+    if (!dados || !dados.historico) return 0;
     return dados.historico.filter(item => {
+        if (!item.data) return false;
         const [dia, m, a] = item.data.split('/');
         return parseInt(m) === (mes + 1) && parseInt(a) === ano;
     }).length;
 }
 
-// VERIFICAR LIMITE E ATUALIZAR AVISO
 function verificarStatusPremium() {
     const avisoEl = document.getElementById('aviso-premium');
+    if (!avisoEl) return true;
+    
     const contagem = getContagemMesAtual();
 
     if (isUsuarioPremium()) {
@@ -35,7 +36,6 @@ function verificarStatusPremium() {
     } else if (restante <= 0) {
         avisoEl.classList.remove('hidden');
         avisoEl.querySelector('p').innerHTML = `🔒 Você atingiu o limite de ${LIMITE_GRATUITO} lançamentos do plano gratuito. <a href="paginas/premium.html" class="underline text-yellow-300">Desbloquear Premium →</a>`;
-        // Bloqueia botão de salvar
         const btnSalvar = document.getElementById('btn-salvar-principal');
         if (btnSalvar) btnSalvar.disabled = true;
     } else {
@@ -44,11 +44,8 @@ function verificarStatusPremium() {
     return restante > 0 || isUsuarioPremium();
 }
 
-// DESBLOQUEAR PREMIUM POR CÓDIGO
 function desbloquearPremium(codigo) {
-    // Você pode trocar esse código quando quiser
     const codigosValidos = ['MEUCAIXA2026', 'PREMIUM2026', 'MOTORISTA'];
-    
     if (codigosValidos.includes(codigo.trim().toUpperCase())) {
         localStorage.setItem('meuCaixa_premium', 'true');
         alert('✅ Premium desbloqueado! Obrigado pelo apoio! 🚗💚');
@@ -59,3 +56,7 @@ function desbloquearPremium(codigo) {
         return false;
     }
 }
+
+window.isUsuarioPremium = isUsuarioPremium;
+window.verificarStatusPremium = verificarStatusPremium;
+window.desbloquearPremium = desbloquearPremium;

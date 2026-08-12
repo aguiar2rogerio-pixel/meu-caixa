@@ -68,7 +68,7 @@ function verificarTravaDiaria() {
     }
 }
 
-// RASCUNHO DOS CAMPOS
+// RASCUNHO DOS CAMPOS — SALVA DIGITAÇÃO
 function salvarRascunhoCampos() {
     if (lancamentoEmEdicao !== null) return;
     const rascunho = {
@@ -83,7 +83,7 @@ function salvarRascunhoCampos() {
 
 function carregarRascunhoCampos() {
     const rascunho = JSON.parse(localStorage.getItem('rascunho_campos_dia'));
-    if (rascunho && lancamentoEmEdicao === null) {
+    if (rascunho) {
         if (document.getElementById('faturamento')) document.getElementById('faturamento').value = rascunho.faturamento || '';
         if (document.getElementById('renda-extra')) document.getElementById('renda-extra').value = rascunho.rendaExtra || '';
         if (document.getElementById('gasolina')) document.getElementById('gasolina').value = rascunho.gasolina || '';
@@ -92,7 +92,7 @@ function carregarRascunhoCampos() {
     }
 }
 
-// MODAL CONFIRMAR SALVAMENTO
+// MODAL SALVAMENTO DO DIA
 function solicitarConfirmacaoSalvamento() {
     const faturamento = parseFloat(document.getElementById('faturamento').value) || 0;
     const rendaExtra = parseFloat(document.getElementById('renda-extra').value) || 0;
@@ -107,12 +107,12 @@ function solicitarConfirmacaoSalvamento() {
     }
 
     const modal = document.getElementById('modal-confirmar-dia');
-    if (modal) modal.classList.remove('hidden');
+    if (modal) modal.classList.add('active');
 }
 
 function fecharModalConfirmacaoDia() {
     const modal = document.getElementById('modal-confirmar-dia');
-    if (modal) modal.classList.add('hidden');
+    if (modal) modal.classList.remove('active');
 }
 
 function executarSalvarLancamento() {
@@ -138,10 +138,12 @@ function executarSalvarLancamento() {
 
     dados.historico.unshift(novoLancamento);
     
+    // Limpa rascunhos do dia
     itensGastosTemporarios = [];
     localStorage.removeItem('rascunho_gastos_dia');
     localStorage.removeItem('rascunho_campos_dia');
 
+    // Limpa campos da tela
     ['faturamento', 'renda-extra', 'gasolina', 'reserva-financeira', 'investimento', 'pessoal'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
@@ -156,13 +158,13 @@ function executarSalvarLancamento() {
 // PLANILHA DE GASTOS
 function abrirSubjanelaGastos() {
     const modal = document.getElementById('subjanela-gastos');
-    if (modal) modal.classList.remove('hidden');
+    if (modal) modal.classList.add('active');
     if (typeof renderizarListaGastos === 'function') renderizarListaGastos();
 }
 
 function fecharSubjanelaGastos() {
     const modal = document.getElementById('subjanela-gastos');
-    if (modal) modal.classList.add('hidden');
+    if (modal) modal.classList.remove('active');
 }
 
 function adicionarItemNaLista() {
@@ -178,10 +180,7 @@ function adicionarItemNaLista() {
     }
 
     itensGastosTemporarios.push({ desc, val });
-
-    if (lancamentoEmEdicao === null) {
-        localStorage.setItem('rascunho_gastos_dia', JSON.stringify(itensGastosTemporarios));
-    }
+    localStorage.setItem('rascunho_gastos_dia', JSON.stringify(itensGastosTemporarios));
 
     if (descEl) descEl.value = '';
     if (valEl) valEl.value = '';
@@ -191,30 +190,19 @@ function adicionarItemNaLista() {
 
 function removerItemGasto(index) {
     itensGastosTemporarios.splice(index, 1);
-    
-    if (lancamentoEmEdicao === null) {
-        localStorage.setItem('rascunho_gastos_dia', JSON.stringify(itensGastosTemporarios));
-    }
-
+    localStorage.setItem('rascunho_gastos_dia', JSON.stringify(itensGastosTemporarios));
     if (typeof renderizarListaGastos === 'function') renderizarListaGastos();
 }
 
 function confirmarSubjanelaGastos() {
     const total = itensGastosTemporarios.reduce((acc, curr) => acc + curr.val, 0);
-    
-    if (lancamentoEmEdicao !== null) {
-        const campoPessoalEdit = document.getElementById('edit-pessoal');
-        if (campoPessoalEdit) campoPessoalEdit.value = total;
-    } else {
-        const campoPessoal = document.getElementById('pessoal');
-        if (campoPessoal) campoPessoal.value = formatarMoeda(total);
-        salvarRascunhoCampos();
-    }
-    
+    const campoPessoal = document.getElementById('pessoal');
+    if (campoPessoal) campoPessoal.value = formatarMoeda(total);
     fecharSubjanelaGastos();
+    salvarRascunhoCampos();
 }
 
-// MODAL RESGATE (FUNDO / POUPANÇA)
+// TRANSFERÊNCIAS (RESGATE)
 function abrirModalTransferencia(origem) {
     origemTransferenciaAtual = origem;
     const modal = document.getElementById('modal-transferencia');
@@ -232,28 +220,26 @@ function abrirModalTransferencia(origem) {
         if (instrucao) instrucao.innerText = "Informe quanto deseja retirar da Poupança para transferir de volta ao Caixa Disponível.";
     }
 
-    if (modal) modal.classList.remove('hidden');
+    if (modal) modal.classList.add('active');
 }
 
 function fecharModalTransferencia() {
     const modal = document.getElementById('modal-transferencia');
-    if (modal) modal.classList.add('hidden');
+    if (modal) modal.classList.remove('active');
     origemTransferenciaAtual = null;
 }
 
 function confirmarTransferencia() {
-    const valorInput = document.getElementById('transf-valor');
-    const valor = parseFloat(valorInput ? valorInput.value : 0) || 0;
-
+    const valor = parseFloat(document.getElementById('transf-valor').value) || 0;
     if (valor <= 0) {
         alert("Por favor, digite um valor válido.");
         return;
     }
 
     if (origemTransferenciaAtual === 'emergencia') {
-        dados.transferenciasReserva = (dados.transferenciasReserva || 0) + valor;
+        dados.transferenciasReserva += valor;
     } else if (origemTransferenciaAtual === 'poupanca') {
-        dados.transferenciasPoupanca = (dados.transferenciasPoupanca || 0) + valor;
+        dados.transferenciasPoupanca += valor;
     }
 
     if (typeof salvarDados === 'function') salvarDados();
@@ -262,55 +248,7 @@ function confirmarTransferencia() {
     fecharModalTransferencia();
 }
 
-// FECHAMENTO MENSAL
-function fecharBalançoMensal() {
-    if (dados.historico.length === 0) {
-        alert("Não existem lançamentos no histórico para fechar o mês.");
-        return;
-    }
-
-    if (confirm("Deseja fechar o balanço do mês atual e arquivá-lo? O histórico de dias será resetado para o novo mês.")) {
-        let faturamentoTotal = 0;
-        let rendaExtraTotal = 0;
-        let gasolinaTotal = 0;
-        let pessoalTotal = 0;
-        let reservaTotal = 0;
-        let investimentoTotal = 0;
-
-        dados.historico.forEach(item => {
-            faturamentoTotal += item.faturamento || 0;
-            rendaExtraTotal += item.rendaExtra || 0;
-            gasolinaTotal += item.gasolina || 0;
-            pessoalTotal += item.pessoal || 0;
-            reservaTotal += item.reservaFinanceira || 0;
-            investimentoTotal += item.investimento || 0;
-        });
-
-        const mesAtual = new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
-
-        if (!dados.mesesAnteriores) dados.mesesAnteriores = [];
-
-        dados.mesesAnteriores.unshift({
-            mes: mesAtual,
-            faturamento: faturamentoTotal,
-            rendaExtra: rendaExtraTotal,
-            gasolina: gasolinaTotal,
-            pessoal: pessoalTotal,
-            reserva: reservaTotal,
-            investimento: investimentoTotal,
-            saldo: (faturamentoTotal + rendaExtraTotal) - (gasolinaTotal + pessoalTotal)
-        });
-
-        dados.historico = [];
-
-        if (typeof salvarDados === 'function') salvarDados();
-        if (typeof atualizarUI === 'function') atualizarUI();
-
-        alert(`✅ Balanço de ${mesAtual} arquivado com sucesso!`);
-    }
-}
-
-// EXPOSITORES GLOBAIS
+// EXPOSITORES PARA ESCOPO GLOBAL (Para acionamento dos onclick do HTML)
 window.formatarMoeda = formatarMoeda;
 window.obterDataHoje = obterDataHoje;
 window.verificarTravaDiaria = verificarTravaDiaria;
@@ -327,4 +265,3 @@ window.confirmarSubjanelaGastos = confirmarSubjanelaGastos;
 window.abrirModalTransferencia = abrirModalTransferencia;
 window.fecharModalTransferencia = fecharModalTransferencia;
 window.confirmarTransferencia = confirmarTransferencia;
-window.fecharBalançoMensal = fecharBalançoMensal;

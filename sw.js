@@ -1,4 +1,4 @@
-const CACHE_NAME = 'meu-caixa-v3.1'; // ⬆️ Altere este número a cada nova versão enviada
+const CACHE_NAME = 'meu-caixa-v3.3'; // ⬆️ Altere este número a cada nova versão enviada
 
 const ASSETS = [
   '/',
@@ -75,4 +75,9 @@ self.addEventListener('fetch', (event) => {
         });
       })
   );
+});
+
+
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
 });

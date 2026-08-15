@@ -130,16 +130,18 @@ function renderizarListaGastos() {
     const totalEl = document.getElementById('subjanela-total-acumulado');
     if (!tbody) return;
 
+    itensGastosTemporarios = typeof normalizarListaGastos === 'function' ? normalizarListaGastos(itensGastosTemporarios) : (itensGastosTemporarios || []);
     tbody.innerHTML = '';
     let total = 0;
 
     itensGastosTemporarios.forEach((item, idx) => {
-        total += item.val;
+        const valor = Number(item.val) || 0;
+        total += valor;
         const tr = document.createElement('tr');
         tr.className = "border-b border-gray-800";
         tr.innerHTML = `
             <td class="p-2 text-gray-300">${item.desc}</td>
-            <td class="p-2 font-bold text-red-400">${formatarMoeda(item.val)}</td>
+            <td class="p-2 font-bold text-red-400">${formatarMoeda(valor)}</td>
             <td class="p-2 text-right">
                 <button type="button" onclick="removerItemGasto(${idx})" class="text-red-500 font-bold">✕</button>
             </td>
@@ -165,9 +167,12 @@ function abrirModalEdicao(index) {
     if (document.getElementById('edit-reserva-financeira')) document.getElementById('edit-reserva-financeira').value = item.reservaFinanceira || 0;
     if (document.getElementById('edit-investimento')) document.getElementById('edit-investimento').value = item.investimento || 0;
 
-    itensGastosTemporarios = Array.isArray(item.detalhesGastos)
-        ? item.detalhesGastos.map(gasto => ({ desc: gasto.desc || 'Gasto sem nome', val: Number(gasto.val) || 0 }))
-        : ((Number(item.pessoal) || 0) > 0 ? [{ desc: 'Gastos do Dia', val: Number(item.pessoal) }] : []);
+    itensGastosTemporarios = typeof normalizarListaGastos === 'function'
+        ? normalizarListaGastos(item.detalhesGastos)
+        : (Array.isArray(item.detalhesGastos) ? item.detalhesGastos : []);
+    if (!itensGastosTemporarios.length && (Number(item.pessoal) || 0) > 0) {
+        itensGastosTemporarios = [{ desc: 'Gastos do Dia', val: Number(item.pessoal) }];
+    }
     modal.classList.add('active');
 }
 
@@ -247,14 +252,50 @@ function renderizarMesesAnteriores() {
     container.innerHTML = '';
     const meses = Array.isArray(dados.mesesAnteriores) ? dados.mesesAnteriores : [];
     if (vazio) vazio.classList.toggle('hidden', meses.length > 0);
-    meses.forEach(mes => {
+    meses.forEach((mes, index) => {
         const resumo = mes.resumo || resumirLancamentos(mes.historico || []);
         const saldo = (resumo.faturamento || 0) + (resumo.rendaExtra || 0) - (resumo.gasolina || 0) - (resumo.pessoal || 0);
-        const bloco = document.createElement('div');
-        bloco.className = 'bg-gray-900 border border-gray-800 rounded-xl p-3 flex justify-between items-center text-xs';
-        bloco.innerHTML = `<div><div class="font-bold text-yellow-500 uppercase">${mes.periodo || 'Mês arquivado'}</div><div class="text-gray-400">${(mes.historico || []).length} lançamento(s)</div></div><strong class="${saldo >= 0 ? 'text-green-400' : 'text-red-400'}">${formatarMoeda(saldo)}</strong>`;
+        const bloco = document.createElement('button');
+        bloco.type = 'button';
+        bloco.onclick = () => abrirModalDetalhesMes(index);
+        bloco.className = 'w-full text-left bg-gray-900 border border-gray-800 rounded-xl p-3 flex justify-between items-center text-xs hover:border-yellow-600 transition-colors';
+        bloco.innerHTML = `<div><div class="font-bold text-yellow-500 uppercase">${mes.periodo || 'Mês arquivado'}</div><div class="text-gray-400">${(mes.historico || []).length} lançamento(s) · Toque para abrir</div></div><strong class="${saldo >= 0 ? 'text-green-400' : 'text-red-400'}">${formatarMoeda(saldo)}</strong>`;
         container.appendChild(bloco);
     });
+}
+
+function abrirModalDetalhesMes(index) {
+    const mes = Array.isArray(dados.mesesAnteriores) ? dados.mesesAnteriores[index] : null;
+    const modal = document.getElementById('modal-detalhes-mes');
+    const titulo = document.getElementById('detalhes-mes-titulo');
+    const resumoEl = document.getElementById('detalhes-mes-resumo');
+    const historicoEl = document.getElementById('detalhes-mes-historico');
+    if (!mes || !modal || !resumoEl || !historicoEl) return;
+
+    const resumo = mes.resumo || resumirLancamentos(mes.historico || []);
+    if (titulo) titulo.innerText = mes.periodo || 'Mês arquivado';
+    resumoEl.innerHTML = [
+        ['Faturamento', resumo.faturamento, 'text-green-400'],
+        ['Renda Extra', resumo.rendaExtra, 'text-green-400'],
+        ['Combustível', resumo.gasolina, 'text-red-400'],
+        ['Gastos do Dia', resumo.pessoal, 'text-red-400'],
+        ['Fundo Emergência', resumo.reservaFinanceira, 'text-orange-400'],
+        ['Poupança', resumo.investimento, 'text-purple-400']
+    ].map(([nome, valor, classe]) => `<div class="bg-gray-800 rounded-lg p-2"><span class="block text-[9px] text-gray-400 uppercase">${nome}</span><strong class="${classe}">${formatarMoeda(valor)}</strong></div>`).join('');
+
+    const historico = Array.isArray(mes.historico) ? mes.historico : [];
+    historicoEl.innerHTML = historico.length ? historico.map(item => {
+        const saldo = (item.faturamento || 0) + (item.rendaExtra || 0) - (item.gasolina || 0) - (item.pessoal || 0);
+        const detalhes = typeof normalizarListaGastos === 'function' ? normalizarListaGastos(item.detalhesGastos) : [];
+        const linhas = detalhes.length ? detalhes.map(gasto => `${gasto.desc}: ${formatarMoeda(gasto.val)}`).join(' · ') : 'Sem detalhamento de despesas';
+        return `<div class="bg-gray-950 border border-gray-800 rounded-lg p-2"><div class="flex justify-between text-xs"><strong>${item.data || 'Sem data'}</strong><strong class="${saldo >= 0 ? 'text-green-400' : 'text-red-400'}">${formatarMoeda(saldo)}</strong></div><div class="mt-1 text-[10px] text-gray-400">${linhas}</div></div>`;
+    }).join('') : '<p class="text-center text-gray-500 text-xs italic">Nenhum lançamento neste mês.</p>';
+    modal.classList.add('active');
+}
+
+function fecharModalDetalhesMes() {
+    const modal = document.getElementById('modal-detalhes-mes');
+    if (modal) modal.classList.remove('active');
 }
 
 // EXPOSITORES PARA O ESCOPO GLOBAL
@@ -269,3 +310,5 @@ window.abrirFecharMes = abrirFecharMes;
 window.fecharModalMes = fecharModalMes;
 window.confirmarFecharMes = confirmarFecharMes;
 window.renderizarMesesAnteriores = renderizarMesesAnteriores;
+window.abrirModalDetalhesMes = abrirModalDetalhesMes;
+window.fecharModalDetalhesMes = fecharModalDetalhesMes;

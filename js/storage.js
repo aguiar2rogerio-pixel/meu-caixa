@@ -2,12 +2,14 @@
 
 // SALVAR DADOS NO LOCALSTORAGE
 function salvarDados() {
+    if (typeof normalizarDados === 'function') dados = normalizarDados(dados);
     localStorage.setItem('meu_caixa_data', JSON.stringify(dados));
 }
 
 // SALVAR RASCUNHO DE GASTOS
 function salvarRascunhoGastos() {
     if (lancamentoEmEdicao === null) {
+        if (typeof normalizarListaGastos === 'function') itensGastosTemporarios = normalizarListaGastos(itensGastosTemporarios);
         localStorage.setItem('rascunho_gastos_dia', JSON.stringify(itensGastosTemporarios));
     }
 }
@@ -43,7 +45,7 @@ function importarBackup(event) {
         try {
             const dadosImportados = JSON.parse(reader.result);
             if (dadosImportados && Array.isArray(dadosImportados.historico)) {
-                dados = dadosImportados; 
+                dados = typeof normalizarDados === 'function' ? normalizarDados(dadosImportados) : dadosImportados;
                 salvarDados();
                 atualizarUI(); 
                 alert('Backup restaurado com sucesso.');

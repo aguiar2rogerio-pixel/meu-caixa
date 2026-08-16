@@ -3,60 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu Caixa — Premium</title>
+    <meta name="theme-color" content="#111111">
+    <title>Meu Caixa — Acesso Completo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="../css/style.css">
-    <link rel="manifest" href="../manifest.json">
-    <meta name="theme-color" content="#111111">
 </head>
-<body class="p-4 max-w-md mx-auto pb-8">
-
+<body class="p-4 max-w-md mx-auto pb-10">
     <header class="text-center my-6">
-        <h1 class="text-2xl font-black text-yellow-400">💎 MEU CAIXA — PREMIUM</h1>
-        <p class="text-gray-400 text-sm mt-2">Lançamentos ilimitados + recursos exclusivos</p>
+        <p class="text-[10px] font-bold uppercase tracking-[0.25em] text-yellow-500 mb-2">Meu Caixa</p>
+        <h1 class="text-3xl font-black text-white leading-tight">Acesso Completo</h1>
+        <p class="text-gray-400 text-sm mt-3">Continue organizando seus ganhos, gastos e resultados sem a limitação do período de teste.</p>
     </header>
 
-    <!-- BENEFÍCIOS -->
-    <div class="bg-gray-900 border-2 border-gray-800 rounded-2xl p-5 mb-6">
-        <h3 class="text-sm font-bold text-green-400 uppercase tracking-wider mb-4">O que você ganha</h3>
-        <ul class="space-y-3 text-sm">
-            <li class="flex items-start gap-3">
-                <span class="text-green-400 font-bold">✅</span>
-                <span>Lançamentos <strong>ILIMITADOS</strong> por mês</span>
-            </li>
-            <li class="flex items-start gap-3">
-                <span class="text-green-400 font-bold">✅</span>
-                <span>Relatórios e fechamento mensal completo</span>
-            </li>
-            <li class="flex items-start gap-3">
-                <span class="text-green-400 font-bold">✅</span>
-                <span>Exportação de dados e backup ilimitado</span>
-            </li>
-            <li class="flex items-start gap-3">
-                <span class="text-green-400 font-bold">✅</span>
-                <span>Suporte prioritário</span>
-            </li>
-            <li class="flex items-start gap-3">
-                <span class="text-green-400 font-bold">✅</span>
-                <span>Novas funções antes de todo mundo</span>
-            </li>
-        </ul>
-    </div>
+    <section class="bg-gradient-to-br from-gray-900 to-gray-950 border border-yellow-600/60 rounded-2xl p-5 mb-5 shadow-lg">
+        <p class="text-yellow-400 text-[10px] uppercase tracking-widest font-bold mb-3">Para motoristas e entregadores</p>
+        <h2 class="text-xl font-black text-white leading-snug">Saiba quanto realmente sobra do seu trabalho.</h2>
+        <p class="text-gray-300 text-sm mt-3 leading-relaxed">Registre seus ganhos, combustível, gastos do dia, reservas e investimentos. Feche cada dia e acompanhe o resultado do mês em um só lugar.</p>
+    </section>
 
-    <!-- PLANOS -->
-    <div class="space-y-4 mb-8">
-        <h3 class="text-sm font-bold text-blue-400 uppercase tracking-wider text-center">Escolha seu plano</h3>
-
-        <div class="bg-gray-900 border-2 border-blue-500/50 rounded-2xl p-5 text-center">
-            <h4 class="text-lg font-bold text-white">Mensal</h4>
-            <p class="text-3xl font-black text-blue-400 my-3">R$ 4,90<span class="text-sm font-normal">/mês</span></p>
-            <button class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl uppercase text-sm">
-                💳 Assinar
-            </button>
+    <section class="bg-gray-900 border border-gray-800 rounded-2xl p-5 mb-5">
+        <h2 class="text-sm font-bold text-green-400 uppercase tracking-wider mb-4">O que você terá</h2>
+        <div class="space-y-3 text-sm text-gray-200">
+            <p><span class="text-green-400 font-bold mr-2">✓</span> Lançamentos e gastos detalhados do dia.</p>
+            <p><span class="text-green-400 font-bold mr-2">✓</span> Fechamento diário para saber o resultado de cada jornada.</p>
+            <p><span class="text-green-400 font-bold mr-2">✓</span> Fechamento mensal com histórico dos períodos anteriores.</p>
+            <p><span class="text-green-400 font-bold mr-2">✓</span> Controle de fundo de emergência, poupança e investimentos.</p>
+            <p><span class="text-green-400 font-bold mr-2">✓</span> Backup e continuidade dos seus registros.</p>
         </div>
+    </section>
 
-        <div class="bg-gray-900 border-2 border-green-500/50 rounded-2xl p-5 text-center relative">
-            <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-green-600 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase">Mais Popular</div>
-            <h4 class="text-lg font-bold text-white">Anual</h4>
-            <p class="text-3xl font-black text-green-400 my-3">R$ 49,90<span class="text-sm font-normal">/ano</span></p>
-            <p class="text-
+    <section class="bg-gray-900 border-2 border-green-500/50 rounded-2xl p-5 mb-5 text-center">
+        <p class="text-green-400 text-[10px] uppercase tracking-widest font-bold">Pagamento único</p>
+        <p class="text-4xl font-black text-white my-3">R$ 69,90</p>
+        <p class="text-gray-400 text-xs leading-relaxed">Acesso completo ao Meu Caixa. Consulte no checkout as opções de pagamento e parcelamento disponíveis.</p>
+        <button id="btn-comprar-acesso" type="button" class="w-full mt-5 bg-green-600 hover:bg-green-500 text-white font-black py-3.5 rounded-xl uppercase text-sm tracking-wide shadow-lg">Liberar acesso completo</button>
+        <p id="mensagem-checkout" class="hidden text-yellow-400 text-xs mt-3">O link de pagamento será disponibilizado assim que o produto for cadastrado.</p>
+    </section>
+
+    <section class="bg-gray-950 border border-gray-800 rounded-2xl p-4 mb-5">
+        <h2 class="text-sm font-bold text-blue-400 uppercase tracking-wider mb-3">Como funciona</h2>
+        <div class="space-y-3 text-xs text-gray-300">
+            <p><strong class="text-white">1.</strong> Você experimenta o Meu Caixa durante o período de teste.</p>
+            <p><strong class="text-white">2.</strong> Quando decidir continuar, clica em “Liberar acesso completo”.</p>
+            <p><strong class="text-white">3.</strong> O pagamento é processado com segurança pela Kiwify.</p>
+            <p><strong class="text-white">4.</strong> Depois da aprovação, você recebe as instruções para continuar usando o aplicativo.</p>
+        </div>
+    </section>
+
+    <section class="text-center mb-6">
+        <p class="text-gray-500 text-xs">Precisa de ajuda ou quer enviar uma sugestão?</p>
+        <p class="text-gray-400 text-xs mt-1">O contato de suporte será informado nesta página antes da publicação comercial.</p>
+    </section>
+
+    <a href="../index.html" class="block text-center text-blue-400 hover:text-blue-300 text-xs underline">Voltar para o aplicativo de teste</a>
+
+    <script>
+        // O link real da Kiwify será inserido após o cadastro do produto.
+        const LINK_CHECKOUT_KIWIFY = '';
+        const botao = document.getElementById('btn-comprar-acesso');
+        const mensagem = document.getElementById('mensagem-checkout');
+        botao.addEventListener('click', () => {
+            if (LINK_CHECKOUT_KIWIFY) {
+                window.location.href = LINK_CHECKOUT_KIWIFY;
+                return;
+            }
+            mensagem.classList.remove('hidden');
+        });
+    </script>
+</body>
+</html>

@@ -180,6 +180,12 @@ function carregarRascunhoCampos() {
 
 // MODAL SALVAMENTO DO DIA
 function solicitarConfirmacaoSalvamento() {
+    if (typeof podeSalvarNovoLancamento === 'function' && !podeSalvarNovoLancamento()) {
+        alert('Seu período de teste terminou. Libere o acesso completo para continuar lançando novos dias.');
+        if (typeof verificarStatusPremium === 'function') verificarStatusPremium();
+        return;
+    }
+
     const faturamento = normalizarNumero(document.getElementById('faturamento').value);
     const rendaExtra = normalizarNumero(document.getElementById('renda-extra').value);
     const gasolina = normalizarNumero(document.getElementById('gasolina').value);
@@ -223,6 +229,7 @@ function executarSalvarLancamento() {
     };
 
     dados.historico.unshift(novoLancamento);
+    if (typeof registrarFechamentoTeste === 'function') registrarFechamentoTeste();
     
     // Limpa rascunhos do dia
     itensGastosTemporarios = [];

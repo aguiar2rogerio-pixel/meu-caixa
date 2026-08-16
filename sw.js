@@ -3,6 +3,7 @@ const CACHE_NAME = 'meu-caixa-v4.0-final-comercial'; // ⬆️ Altere este núme
 const ASSETS = [
   '/',
   'index.html',
+  'acesso-completo.html',
   'privacidade.html',
   'manifest.json',
   'icon-192.png',

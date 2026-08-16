@@ -12,7 +12,8 @@ const ASSETS = [
   'js/storage.js',
   'js/ui.js',
   'js/premium.js',
-  'paginas/premium.html'
+  'paginas/premium.html',
+  'paginas/apresentacao.html'
 ];
 
 // 1. INSTALAÇÃO — Baixa a versão nova ignorando o cache do navegador

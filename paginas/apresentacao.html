@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#07111f">
+    <meta name="description" content="Meu Caixa: descubra quanto realmente sobra do seu trabalho como motorista ou entregador.">
+    <title>Meu Caixa — Controle seu resultado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root { color-scheme: dark; }
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { margin: 0; background: #07111f; color: #f8fafc; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+        .glow { box-shadow: 0 0 0 1px rgba(34, 197, 94, .18), 0 24px 70px rgba(2, 6, 23, .45); }
+        .hero-grid { background-image: linear-gradient(rgba(148,163,184,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,.07) 1px, transparent 1px); background-size: 36px 36px; }
+        .phone { transform: rotate(2deg); box-shadow: 20px 28px 80px rgba(0,0,0,.45); }
+        .phone:after { content: ''; position: absolute; inset: 8px; border-radius: 26px; border: 1px solid rgba(255,255,255,.08); pointer-events: none; }
+        .shine { background: linear-gradient(110deg, transparent 25%, rgba(255,255,255,.12) 45%, transparent 65%); background-size: 220% 100%; animation: shine 5s ease-in-out infinite; }
+        @keyframes shine { 0%, 55% { background-position: 220% 0; } 75%, 100% { background-position: -20% 0; } }
+    </style>
+</head>
+<body>
+    <header class="sticky top-0 z-30 border-b border-white/10 bg-[#07111f]/90 backdrop-blur-xl">
+        <div class="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
+            <a href="#top" class="flex items-center gap-2 font-black tracking-tight"><span class="flex h-9 w-9 items-center justify-center rounded-xl bg-green-500 text-lg text-[#07111f]">$</span><span>Meu Caixa</span></a>
+            <a href="#oferta" class="rounded-full border border-green-400/50 px-4 py-2 text-xs font-bold text-green-300 transition hover:bg-green-400 hover:text-[#07111f]">Quero conhecer</a>
+        </div>
+    </header>
+
+    <main id="top">
+        <section class="hero-grid relative overflow-hidden">
+            <div class="absolute -left-28 -top-32 h-80 w-80 rounded-full bg-green-500/15 blur-3xl"></div>
+            <div class="absolute -right-28 top-20 h-96 w-96 rounded-full bg-blue-500/15 blur-3xl"></div>
+            <div class="relative mx-auto grid max-w-6xl items-center gap-12 px-5 pb-20 pt-16 md:grid-cols-[1.05fr_.95fr] md:pb-28 md:pt-24">
+                <div>
+                    <div class="mb-6 inline-flex items-center gap-2 rounded-full border border-yellow-400/30 bg-yellow-400/10 px-3 py-2 text-[11px] font-bold uppercase tracking-[.16em] text-yellow-300"><span class="h-2 w-2 rounded-full bg-yellow-300"></span> Feito para quem trabalha por aplicativo</div>
+                    <h1 class="max-w-2xl text-4xl font-black leading-[1.05] tracking-tight sm:text-6xl">Você sabe quanto <span class="text-green-400">realmente sobra</span> do seu trabalho?</h1>
+                    <p class="mt-6 max-w-xl text-lg leading-relaxed text-slate-300">O Meu Caixa ajuda motoristas e entregadores a organizar ganhos, combustível e gastos — e a fechar o mês sabendo onde o dinheiro foi parar.</p>
+                    <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+                        <a href="../index.html" class="shine rounded-2xl bg-green-500 px-6 py-4 text-center text-sm font-black uppercase tracking-wide text-[#07111f] shadow-xl shadow-green-500/20 transition hover:bg-green-400">Testar gratuitamente</a>
+                        <a href="#oferta" class="rounded-2xl border border-slate-600 bg-slate-900/70 px-6 py-4 text-center text-sm font-black uppercase tracking-wide text-white transition hover:border-green-400 hover:text-green-300">Ver acesso completo</a>
+                    </div>
+                    <p class="mt-4 text-xs text-slate-500">Sem complicação. Comece pelo seu primeiro fechamento diário.</p>
+                </div>
+                <div class="relative mx-auto w-full max-w-sm md:mr-4">
+                    <div class="phone relative mx-auto w-64 rounded-[34px] border-8 border-slate-800 bg-slate-950 p-3">
+                        <div class="mx-auto mb-3 h-1.5 w-20 rounded-full bg-slate-700"></div>
+                        <div class="rounded-2xl bg-[#0b1728] p-4">
+                            <p class="text-[9px] font-bold uppercase tracking-widest text-slate-500">Total acumulado</p>
+                            <p class="mt-1 text-2xl font-black text-green-400">R$ 3.842,70</p>
+                            <div class="mt-4 grid grid-cols-2 gap-2 text-center text-[9px]"><div class="rounded-xl bg-orange-400/10 p-2"><span class="block text-slate-500">Emergência</span><strong class="text-orange-300">R$ 640</strong></div><div class="rounded-xl bg-blue-400/10 p-2"><span class="block text-slate-500">Disponível</span><strong class="text-blue-300">R$ 2.118</strong></div></div>
+                            <div class="mt-4 rounded-xl border border-slate-700 bg-slate-900 p-3"><div class="flex justify-between text-[9px]"><span class="text-slate-400">Resultado do dia</span><span class="font-bold text-green-400">+ R$ 186,50</span></div><div class="mt-3 h-2 rounded-full bg-slate-800"><div class="h-2 w-3/4 rounded-full bg-green-500"></div></div></div>
+                            <div class="mt-4 rounded-xl bg-yellow-500/10 p-3 text-center text-[9px] font-bold text-yellow-300">FECHAMENTO MENSAL</div>
+                        </div>
+                    </div>
+                    <div class="absolute -bottom-4 -left-2 rounded-2xl border border-green-400/30 bg-slate-900 px-4 py-3 shadow-xl"><p class="text-[9px] uppercase tracking-widest text-slate-500">Mais clareza</p><p class="text-sm font-black text-green-300">Mais controle</p></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mx-auto max-w-6xl px-5 py-16 md:py-24">
+            <div class="mx-auto max-w-2xl text-center"><p class="text-xs font-bold uppercase tracking-[.2em] text-green-400">A rotina de quem corre atrás</p><h2 class="mt-3 text-3xl font-black tracking-tight sm:text-4xl">Receber não é o mesmo que lucrar.</h2><p class="mt-4 leading-relaxed text-slate-400">Combustível, manutenção, alimentação, gastos pessoais e reservas diminuem o valor que realmente fica no seu bolso. Sem uma visão organizada, o mês termina e a dúvida permanece.</p></div>
+            <div class="mt-12 grid gap-4 md:grid-cols-3"><div class="rounded-3xl border border-red-400/15 bg-red-400/5 p-6"><div class="text-2xl">?</div><h3 class="mt-4 font-bold">Quanto sobrou de verdade?</h3><p class="mt-2 text-sm leading-relaxed text-slate-400">Não confunda faturamento com resultado. Veja o valor depois dos gastos.</p></div><div class="rounded-3xl border border-yellow-400/15 bg-yellow-400/5 p-6"><div class="text-2xl">▣</div><h3 class="mt-4 font-bold">Para onde foi o dinheiro?</h3><p class="mt-2 text-sm leading-relaxed text-slate-400">Detalhe os gastos do dia e pare de depender da memória.</p></div><div class="rounded-3xl border border-blue-400/15 bg-blue-400/5 p-6"><div class="text-2xl">◷</div><h3 class="mt-4 font-bold">Como fechou o mês?</h3><p class="mt-2 text-sm leading-relaxed text-slate-400">Compare períodos e tome decisões melhores para a próxima jornada.</p></div></div>
+        </section>
+
+        <section class="border-y border-white/5 bg-slate-900/40"><div class="mx-auto max-w-6xl px-5 py-16 md:py-24"><div class="grid items-center gap-12 md:grid-cols-2"><div><p class="text-xs font-bold uppercase tracking-[.2em] text-yellow-300">O diferencial do Meu Caixa</p><h2 class="mt-3 text-3xl font-black tracking-tight sm:text-4xl">Feche o dia. Entenda o mês.</h2><p class="mt-5 leading-relaxed text-slate-300">O aplicativo foi pensado para acompanhar a sua realidade, sem planilhas complicadas e sem linguagem difícil.</p><div class="mt-8 space-y-5"><div class="flex gap-4"><span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-green-400/15 font-black text-green-300">1</span><div><h3 class="font-bold">Registre seu movimento</h3><p class="mt-1 text-sm text-slate-400">Ganhos, renda extra, combustível, gastos e valores reservados.</p></div></div><div class="flex gap-4"><span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-green-400/15 font-black text-green-300">2</span><div><h3 class="font-bold">Feche o dia com clareza</h3><p class="mt-1 text-sm text-slate-400">Veja o resultado da jornada e mantenha seus lançamentos organizados.</p></div></div><div class="flex gap-4"><span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-green-400/15 font-black text-green-300">3</span><div><h3 class="font-bold">Feche o mês e avance</h3><p class="mt-1 text-sm text-slate-400">Consulte o histórico e descubra como melhorar o próximo período.</p></div></div></div></div><div class="rounded-3xl border border-green-400/20 bg-[#07111f] p-6 glow"><div class="flex items-center justify-between border-b border-white/10 pb-4"><div><p class="text-xs text-slate-500">Resumo do período</p><p class="mt-1 font-black">Março 2026</p></div><span class="rounded-full bg-green-400/10 px-3 py-1 text-[10px] font-bold uppercase text-green-300">Fechado</span></div><div class="grid grid-cols-2 gap-3 py-5"><div class="rounded-2xl bg-slate-900 p-4"><p class="text-[10px] text-slate-500">Faturamento</p><p class="mt-2 font-black text-green-300">R$ 5.280</p></div><div class="rounded-2xl bg-slate-900 p-4"><p class="text-[10px] text-slate-500">Gastos</p><p class="mt-2 font-black text-red-300">R$ 1.438</p></div><div class="col-span-2 rounded-2xl border border-yellow-400/25 bg-yellow-400/5 p-4"><p class="text-[10px] uppercase tracking-wider text-yellow-300">Resultado do mês</p><p class="mt-2 text-3xl font-black text-white">R$ 3.842</p><p class="mt-1 text-xs text-slate-400">Agora você sabe o que realmente sobrou.</p></div></div></div></div></div></section>
+
+        <section id="oferta" class="mx-auto max-w-6xl px-5 py-16 md:py-24"><div class="mx-auto max-w-xl rounded-[2rem] border border-green-400/40 bg-gradient-to-b from-green-400/10 to-slate-900 p-7 text-center glow sm:p-10"><div class="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-green-500 text-2xl font-black text-[#07111f]">$</div><p class="text-xs font-bold uppercase tracking-[.2em] text-green-300">Comece agora</p><h2 class="mt-3 text-3xl font-black">Primeiro, experimente.</h2><p class="mt-4 text-slate-300">Use o período de teste para fazer seus lançamentos e conhecer o fechamento mensal. Quando estiver pronto, libere o acesso completo.</p><div class="my-7"><p class="text-sm text-slate-400">Acesso completo por pagamento único</p><p class="mt-1 text-5xl font-black text-white">R$ 69,90</p><p class="mt-2 text-xs text-slate-500">Consulte as opções de pagamento no checkout.</p></div><div class="grid gap-3 sm:grid-cols-2"><a href="../index.html" class="rounded-2xl border border-slate-600 bg-slate-900 px-5 py-4 text-sm font-black uppercase text-white transition hover:border-green-400 hover:text-green-300">Testar gratuitamente</a><a id="link-checkout" href="premium.html" class="rounded-2xl bg-green-500 px-5 py-4 text-sm font-black uppercase text-[#07111f] transition hover:bg-green-400">Liberar acesso</a></div><p class="mt-5 text-xs text-slate-500">Pagamento processado com segurança pela Kiwify.</p></div></section>
+
+        <section class="border-t border-white/5 px-5 py-12 text-center"><p class="text-sm font-bold text-slate-300">Feito para quem trabalha. Pensado para dar clareza.</p><p class="mt-2 text-xs text-slate-500">Dúvidas, sugestões ou suporte? O contato será informado antes do lançamento.</p><a href="../index.html" class="mt-5 inline-block text-xs text-green-400 underline">Abrir o aplicativo</a></section>
+    </main>
+
+    <script>
+        // O checkout real será colocado depois do cadastro do produto na Kiwify.
+        const LINK_CHECKOUT_KIWIFY = '';
+        const checkout = document.getElementById('link-checkout');
+        checkout.addEventListener('click', (event) => {
+            if (!LINK_CHECKOUT_KIWIFY) {
+                event.preventDefault();
+                window.location.href = 'premium.html';
+            } else {
+                checkout.href = LINK_CHECKOUT_KIWIFY;
+            }
+        });
+    </script>
+</body>
+</html>

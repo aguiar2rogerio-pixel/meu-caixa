@@ -1,8 +1,9 @@
 {
-  "rewrites": [
+  "redirects": [
     {
       "source": "/",
-      "destination": "/paginas/apresentacao.html"
+      "destination": "/paginas/apresentacao.html",
+      "permanent": false
     }
   ]
 }

@@ -2,16 +2,19 @@
     let deferredPrompt = null;
 
     function criarInterfaceInstalacao() {
-        if (document.getElementById('btn-instalar-pwa')) return;
-
-        const botao = document.createElement('button');
-        botao.id = 'btn-instalar-pwa';
-        botao.type = 'button';
-        botao.className = 'fixed bottom-4 right-4 z-40 flex items-center gap-2 rounded-full border border-emerald-400/50 bg-emerald-500 px-4 py-3 text-xs font-black text-slate-950 shadow-xl shadow-emerald-950/40 transition hover:bg-emerald-400';
-        botao.innerHTML = '<span aria-hidden="true">⇩</span><span>Instalar aplicativo</span>';
-        botao.setAttribute('aria-label', 'Ver instruções para instalar o Meu Caixa');
-        botao.addEventListener('click', abrirOrientacoesInstalacao);
-        document.body.appendChild(botao);
+        let botao = document.getElementById('btn-instalar-pwa');
+        if (!botao) {
+            botao = document.createElement('button');
+            botao.id = 'btn-instalar-pwa';
+            botao.type = 'button';
+            botao.className = 'rounded-xl border border-emerald-400/40 bg-emerald-500 px-3 py-2 text-[10px] font-black uppercase tracking-wider text-slate-950 transition hover:bg-emerald-400';
+            botao.innerHTML = '<span aria-hidden="true">⇩</span> Instalar';
+            botao.setAttribute('aria-label', 'Ver instruções para instalar o Meu Caixa');
+            botao.addEventListener('click', abrirOrientacoesInstalacao);
+            document.body.appendChild(botao);
+        } else {
+            botao.addEventListener('click', abrirOrientacoesInstalacao);
+        }
 
         const modal = document.createElement('div');
         modal.id = 'modal-instalacao-pwa';

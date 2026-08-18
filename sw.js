@@ -1,4 +1,4 @@
-const CACHE_NAME = 'meu-caixa-v4.2-final-comercial'; // ⬆️ Altere este número a cada nova versão enviada
+const CACHE_NAME = 'meu-caixa-v4.3-final-comercial'; // ⬆️ Altere este número a cada nova versão enviada
 
 const ASSETS = [
   '/',
@@ -15,6 +15,7 @@ const ASSETS = [
   'js/premium.js',
   'js/install.js',
   'js/manual.js',
+  'manual.html',
   'paginas/premium.html',
   'paginas/apresentacao.html'
 ];

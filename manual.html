@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Manual de Uso — Meu Caixa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="theme-color" content="#111111">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        details > summary { list-style: none; cursor: pointer; }
+        details > summary::-webkit-details-marker { display: none; }
+        details[open] .seta { transform: rotate(180deg); }
+        .seta { transition: transform .18s ease-out; }
+    </style>
+</head>
+<body class="min-h-screen bg-black px-4 pb-10 text-white">
+    <header class="mx-auto flex max-w-md items-center justify-between border-b border-gray-800 py-5">
+        <a href="index.html" class="rounded-full border border-emerald-500/40 bg-emerald-950/50 px-4 py-2 text-sm font-bold text-emerald-300">← Voltar ao Aplicativo</a>
+        <span class="text-xs font-black uppercase tracking-wider text-gray-400">Instruções de uso</span>
+    </header>
+
+    <main class="mx-auto max-w-md">
+        <section class="py-12 text-center">
+            <span class="inline-block rounded-full border border-emerald-500/40 bg-emerald-950/50 px-5 py-2 text-[10px] font-black uppercase tracking-[.22em] text-emerald-300">Central de ajuda</span>
+            <h1 class="mt-7 text-4xl font-black leading-tight tracking-tight">Como funciona o<br>Meu Caixa?</h1>
+            <p class="mt-5 text-base leading-relaxed text-gray-400">Aprenda a registrar seus dias, organizar seus gastos e acompanhar o resultado do seu trabalho.</p>
+        </section>
+
+        <section class="grid grid-cols-2 gap-3">
+            <div class="rounded-3xl border border-gray-800 bg-gray-900 p-5">
+                <div class="text-2xl text-emerald-400">✓</div>
+                <h2 class="mt-3 text-base font-black">Sem previsões</h2>
+                <p class="mt-2 text-sm leading-relaxed text-gray-400">O aplicativo trabalha com os valores que você realmente lança.</p>
+            </div>
+            <div class="rounded-3xl border border-gray-800 bg-gray-900 p-5">
+                <div class="text-2xl text-blue-400">▣</div>
+                <h2 class="mt-3 text-base font-black">Offline e privado</h2>
+                <p class="mt-2 text-sm leading-relaxed text-gray-400">Seus dados ficam no navegador do aparelho, sem cadastro.</p>
+            </div>
+        </section>
+
+        <section class="mt-8 space-y-3">
+            <details class="rounded-3xl border border-gray-800 bg-gray-900 p-5" open>
+                <summary class="flex items-center justify-between gap-3"><div><span class="text-emerald-400">01.</span><span class="ml-2 font-black">Comece aqui</span><p class="mt-1 text-sm text-gray-400">O objetivo do aplicativo</p></div><span class="seta text-xl text-gray-500">⌄</span></summary>
+                <p class="mt-5 border-t border-gray-800 pt-4 text-sm leading-relaxed text-gray-300">O Meu Caixa ajuda você a acompanhar o resultado diário do trabalho. Preencha os valores do dia com calma e confira o saldo disponível antes de salvar.</p>
+            </details>
+            <details class="rounded-3xl border border-gray-800 bg-gray-900 p-5">
+                <summary class="flex items-center justify-between gap-3"><div><span class="text-blue-400">02.</span><span class="ml-2 font-black">Lançamento diário</span><p class="mt-1 text-sm text-gray-400">Como registrar entradas e gastos</p></div><span class="seta text-xl text-gray-500">⌄</span></summary>
+                <p class="mt-5 border-t border-gray-800 pt-4 text-sm leading-relaxed text-gray-300">Informe faturamento, renda extra, combustível, gastos do dia, fundo de emergência e poupança. Use <strong>Detalhar</strong> para registrar cada despesa em uma planilha.</p>
+            </details>
+            <details class="rounded-3xl border border-gray-800 bg-gray-900 p-5">
+                <summary class="flex items-center justify-between gap-3"><div><span class="text-yellow-400">03.</span><span class="ml-2 font-black">Fechamento diário</span><p class="mt-1 text-sm text-gray-400">Por que o dia fica bloqueado</p></div><span class="seta text-xl text-gray-500">⌄</span></summary>
+                <p class="mt-5 border-t border-gray-800 pt-4 text-sm leading-relaxed text-gray-300">Ao tocar em <strong>Salvar e Fechar o Dia</strong>, o movimento fica protegido e novos lançamentos para a data são bloqueados. Se precisar corrigir, use <strong>Ajustar</strong> no histórico.</p>
+            </details>
+            <details class="rounded-3xl border border-gray-800 bg-gray-900 p-5">
+                <summary class="flex items-center justify-between gap-3"><div><span class="text-orange-400">04.</span><span class="ml-2 font-black">Fechamento mensal</span><p class="mt-1 text-sm text-gray-400">Como arquivar o período</p></div><span class="seta text-xl text-gray-500">⌄</span></summary>
+                <p class="mt-5 border-t border-gray-800 pt-4 text-sm leading-relaxed text-gray-300">No fim do período, toque em <strong>Fechar Balanço Mensal</strong>. O resumo será arquivado e poderá ser consultado posteriormente no histórico de meses.</p>
+            </details>
+            <details class="rounded-3xl border border-gray-800 bg-gray-900 p-5">
+                <summary class="flex items-center justify-between gap-3"><div><span class="text-purple-400">05.</span><span class="ml-2 font-black">Backup e restauração</span><p class="mt-1 text-sm text-gray-400">Proteja seus dados</p></div><span class="seta text-xl text-gray-500">⌄</span></summary>
+                <p class="mt-5 border-t border-gray-800 pt-4 text-sm leading-relaxed text-gray-300">Antes de trocar de aparelho, navegador ou limpar os dados, use <strong>Backup</strong>. No novo navegador, toque em <strong>Ler Backup</strong> e selecione o arquivo salvo. A situação do período de teste também acompanha o backup.</p>
+            </details>
+            <details class="rounded-3xl border border-gray-800 bg-gray-900 p-5">
+                <summary class="flex items-center justify-between gap-3"><div><span class="text-emerald-400">06.</span><span class="ml-2 font-black">Instalação no celular</span><p class="mt-1 text-sm text-gray-400">Tenha o aplicativo na tela inicial</p></div><span class="seta text-xl text-gray-500">⌄</span></summary>
+                <p class="mt-5 border-t border-gray-800 pt-4 text-sm leading-relaxed text-gray-300">Use o botão <strong>⇩ Instalar</strong> no topo do aplicativo. Se o navegador não oferecer a instalação automática, abra o menu de três pontos e escolha <strong>Instalar aplicativo</strong> ou <strong>Adicionar à tela inicial</strong>.</p>
+                <div class="mt-4 rounded-2xl border border-yellow-500/30 bg-yellow-500/10 p-4 text-sm leading-relaxed text-yellow-200"><strong>Play Protect:</strong> em alguns celulares, toque em <strong>Mais detalhes</strong> e depois em <strong>Instalar assim mesmo</strong>, conferindo se o endereço é o oficial do Meu Caixa.</div>
+            </details>
+        </section>
+
+        <a href="index.html" class="mt-8 block rounded-2xl bg-emerald-500 px-5 py-4 text-center text-sm font-black uppercase tracking-wider text-slate-950">Voltar ao aplicativo</a>
+    </main>
+</body>
+</html>

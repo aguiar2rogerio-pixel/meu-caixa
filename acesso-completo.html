@@ -23,6 +23,15 @@
 </head>
 <body class="p-4 max-w-md mx-auto pb-24">
 
+    <!-- NAVEGAÇÃO DO APLICATIVO -->
+    <nav class="mb-4 flex items-center justify-between border-b border-gray-800 pb-3 text-xs font-bold text-gray-400">
+        <a href="paginas/apresentacao.html" class="text-green-400 hover:text-green-300">← Início</a>
+        <div class="flex items-center gap-2">
+            <button type="button" onclick="abrirManual()" class="rounded-lg px-2 py-1 hover:bg-gray-900 hover:text-blue-300">? Manual</button>
+            <button type="button" id="btn-instalar-pwa" aria-label="Ver instruções para instalar o Meu Caixa" class="rounded-lg border border-emerald-400/40 bg-emerald-500 px-2.5 py-1.5 text-[10px] font-black uppercase text-slate-950">⇩ Instalar</button>
+        </div>
+    </nav>
+
     <!-- ACESSO COMPLETO -->
     <div id="aviso-premium" class="hidden mb-3 p-3 bg-yellow-950 border border-yellow-600 rounded-xl text-center">
         <p class="text-yellow-400 text-xs font-bold"></p>
